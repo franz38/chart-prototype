@@ -1,9 +1,12 @@
-import { Button, Divider, Drawer, Flex, Upload } from "antd"
+import { Button, Divider, Drawer, Flex, Typography, Upload, UploadFile } from "antd"
 import { LevelsPanel } from "./LevelsPanel"
 import { useState } from "react"
 import { Dataset } from "../state/dto"
-import { Database, Layers, Paperclip } from "lucide-react"
+import { Database, Layers, Paperclip, UploadIcon } from "lucide-react"
 import { loadLocalDs, onFileUpload } from "../utils/data"
+import { UploadChangeParam } from "antd/es/upload"
+import { sectionHeader } from "./interfaceUtils"
+const { Text } = Typography;
 
 
 const iconAttributes = {
@@ -36,19 +39,10 @@ export const MainPanel = (props: {
         }
     }
 
-    const _onFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files) {
-            try {
-                let file: File = e.target.files[0]
-                const ds = await onFileUpload(file)
-                if (ds)
-                    props.setDataset(ds)
-
-            } catch (error) {
-                throw new Error("Error reading the csv file")
-            }
-        }
-    };
+    const onFileInputChange = async (info: UploadChangeParam<UploadFile<any>>) => {
+        const ds = await onFileUpload(info.file.originFileObj)
+        if (ds) props.setDataset(ds)
+    }
 
     return <Drawer
         placement="left"
@@ -63,16 +57,19 @@ export const MainPanel = (props: {
                 type="text"
                 onClick={() => setSectionSelected("items")}
                 icon={<Layers {...iconAttributes} />}
+                className={sectionSelected == "items" ? "mainButton" : ""}
             >Items</Button>
             <Button
                 type="text"
                 onClick={() => setSectionSelected("data")}
                 icon={<Database {...iconAttributes} />}
+                className={sectionSelected == "data" ? "mainButton" : ""}
             >Data</Button>
         </Flex>
         <Divider style={{ margin: "1rem 0px" }} />
         {sectionSelected == "items" && <LevelsPanel />}
-        {sectionSelected == "data" && <Flex vertical style={{ padding: "1rem .5rem" }}>
+        {sectionSelected == "data" && <Flex vertical style={{ padding: "1rem .5rem" }} gap={10}>
+            <Text {...sectionHeader}>Datasets</Text>
             {props.dataset && <Flex >
                 <Button
                     type="text"
@@ -82,22 +79,27 @@ export const MainPanel = (props: {
                 >{props.dataset.file.name}</Button>
             </Flex>}
 
-            <Flex vertical style={{ paddingTop: "1.5rem" }}>
-                <Button
-                    style={{ ...buttonStyle }}
-                    onClick={() => _loadLocalDs()}
-                >Generate ds</Button>
-                <input
-                    type="file"
-                    accept=".csv"
-                    onChange={_onFileUpload}
-                ></input>
-                <Upload
-                    onChange={(info) => console.log(info)}
-                >
-                    <Button icon={<></>}>Click to Upload</Button>
-                </Upload>
-            </Flex>
+            <Divider />
+
+            <Button
+                style={{ ...buttonStyle }}
+                onClick={() => _loadLocalDs()}
+            >Generate ds</Button>
+            <Upload
+                name="avatar"
+                listType="picture-card"
+                className="avatar-uploader"
+                showUploadList={false}
+                onChange={onFileInputChange}
+                style={{ width: "100%" }}
+            >
+                <Flex justify="center" align="center">
+                    <UploadIcon />
+                    <button style={{ border: 0, background: 'none', paddingTop: ".2rem" }} type="button">
+                        <div style={{ marginTop: 8 }}>Upload dataset</div>
+                    </button>
+                </Flex>
+            </Upload>
             {/* <input type="button" value={"load ds"} onClick={() => loadLocalDs()}></input> */}
         </Flex>}
     </Drawer>

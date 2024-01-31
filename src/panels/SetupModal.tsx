@@ -8,6 +8,7 @@ import { Dataset, PlotType } from "../state/dto"
 import { newBottomAxis, newCircularAxis, newLeftAxis, newRadarAxis } from "../state/aces/dto"
 import { addAces, changeAxisKey, changeRadarAxisKey } from "../state/aces/acesSlice"
 import { UploadChangeParam } from "antd/es/upload"
+import { UploadIcon } from "lucide-react"
 
 interface SetupModalProps {
     dataset: Dataset | undefined;
@@ -98,7 +99,7 @@ export const SetupModal = (props: SetupModalProps) => {
                     { title: "Select data" },
                     { title: "Choose plot type" }
                 ]}
-                style={{ width: "20rem", margin: "auto", padding: "0rem 0px 2rem 0px" }}
+                style={{ width: "20rem", margin: "auto", padding: "0rem 0px 4rem 0px" }}
             />
             <Flex vertical style={{ width: "20rem", margin: "auto" }} gap={10}>
                 {step === 0 && <>
@@ -120,14 +121,18 @@ export const SetupModal = (props: SetupModalProps) => {
                             // beforeUpload={beforeUpload}
                             onChange={(f) => { onFileInputChange(f); setStep(step + 1) }}
                             style={{ width: "100%", }}
-
+                            
                         >
+                            <Flex vertical justify="center" align="center">
                             {/* {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton} */}
-                            <button style={{ border: 0, background: 'none' }} type="button">
+                            <UploadIcon />
+                            <button style={{ border: 0, background: 'none', paddingTop: ".2rem" }} type="button">
                                 {/* {loading ? <LoadingOutlined /> : <PlusOutlined />} */}
                                 {/* <PlusOutlined /> */}
                                 <div style={{ marginTop: 8 }}>Upload dataset</div>
                             </button>
+
+                            </Flex>
                         </Upload>
 
                     </Flex>

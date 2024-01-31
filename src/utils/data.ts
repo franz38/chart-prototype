@@ -52,7 +52,11 @@ export const onFileUpload = async (file: File | undefined) => {
       }
 
       let ds: Dataset = {
-        file: { ...file },
+        file: { 
+          name: file.name,
+          size: file.size,
+          type: file.type
+         },
         props: csv_props,
         values: values,
       };

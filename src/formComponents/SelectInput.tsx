@@ -1,9 +1,9 @@
 
-interface SelectInputProps {
+interface SelectInputProps<T> {
     label?: string | React.ReactNode;
-    options: { value: string, label: string }[] | undefined;
-    value: string | undefined;
-    onChange: (key: string) => void;
+    options: { value: T, label: string }[] | undefined;
+    value: T | undefined;
+    onChange: (key: T) => void;
     readonly?: boolean;
 }
 
@@ -16,23 +16,23 @@ const labelStyle: React.CSSProperties = {
     userSelect: "none",
 }
 
-export const SelectInput = (props: SelectInputProps) => {
+export const SelectInput = <T,>(props: SelectInputProps<T>) => {
 
 
     return <>
-        <label style={{ display: "flex", width: "204px", borderRadius: "2px", border: "1px solid #eee", height: "30px", lineHeight: "30px" }}>
-            <div style={{ display: "flex", width: "-webkit-fill-available" }}>
+        <label className="selectInput">
+            <div>
                 <span style={labelStyle}>{props.label}</span>
                 <select
                     disabled={props.readonly}
                     style={{ flexGrow: 1 }}
-                    value={props.value}
+                    value={props.value as string}
                     onChange={(e) =>
-                        props.onChange((props.options ?? []).find(opt => opt.value === e.target.value)?.value as string)
+                        props.onChange((props.options ?? []).find(opt => opt.value === e.target.value)?.value as T)
                     }
                 >
                     {(props.options ?? []).map(option =>
-                        <option key={option.value} value={option.value}>
+                        <option key={option.value as string} value={option.value as string}>
                             {option.label}
                         </option>
                     )}

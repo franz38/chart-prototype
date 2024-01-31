@@ -16,6 +16,13 @@ export const DatasetModal = (props: DatasetModalProps) => {
         open={props.open}
         width={600}
         onCancel={() => props.onClose()}
+        styles={{
+            content: {
+                borderColor: "rgb(213, 213, 213)",
+                boxShadow: "none",
+                padding: "4rem"
+            }
+        }}
     >
         <DataGrid
             columns={props.dataset?.props.map(p => ({ key: p, name: p })) ?? []}

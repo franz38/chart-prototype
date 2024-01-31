@@ -212,7 +212,7 @@ export const Canvas = (props: { plotId: string }) => {
         if (axNode) {
             axNode
                 .attr("cursor", "pointer")
-                .on("click", () => dispatch(setSelected({ type: "axis", key: _axis.id })))
+                .on("click", (e: any) => {e.stopPropagation(); dispatch(setSelected({ type: "axis", key: _axis.id }))})
         }
     }
 

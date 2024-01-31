@@ -9,7 +9,7 @@ import { Dataset } from "../../state/dto";
 import { panelSection, sectionHeader } from "../interfaceUtils";
 import { changeAxisKey } from "../../state/aces/acesSlice";
 import { SelectInput } from "../../formComponents/SelectInput";
-import { DraftingCompass, Radius, Tag } from "lucide-react";
+import { Box, DraftingCompass, Radius, Tag } from "lucide-react";
 import { inputIconProps } from "../../formComponents/styleConst";
 import { ColorInput } from "../../formComponents/ColorInput";
 import { NumberInput } from "../../formComponents/NumberInput";
@@ -57,6 +57,18 @@ export const PiePlotPanel = (props: IAxisPanel) => {
             <Flex {...panelSection}>
                 <Select
                     style={{ width: "100%" }}
+                    options={[
+                        { value: PlotType.COLUMNS, label: "Columns" },
+                        { value: PlotType.LINE, label: "Line" },
+                        { value: PlotType.SCATTER, label: "Scatter" },
+                        { value: PlotType.PIE, label: "Pie/Donuts" },
+                        { value: PlotType.SPIDER, label: "Spider" }
+                    ]}
+                    value={plot.type}
+                    onChange={(val) => props.changePlotType(plot, val)}
+                />
+                <SelectInput 
+                    label={<Box {...inputIconProps} />}
                     options={[
                         { value: PlotType.COLUMNS, label: "Columns" },
                         { value: PlotType.LINE, label: "Line" },
