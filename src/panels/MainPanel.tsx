@@ -25,13 +25,14 @@ export const MainPanel = (props: {
     dataset: Dataset | undefined
     datasetSelect: () => void;
     setDataset: (ds: Dataset) => void;
+    visible: boolean;
 }) => {
 
     const [sectionSelected, setSectionSelected] = useState<"items" | "data">("items")
 
     const _loadLocalDs = async () => {
         try {
-            const ds = await loadLocalDs("./package.csv")
+            const ds = await loadLocalDs("./world_cups.csv")
             props.setDataset(ds)
         }
         catch (error) {
@@ -46,7 +47,7 @@ export const MainPanel = (props: {
 
     return <Drawer
         placement="left"
-        open={!!true}
+        open={props.visible}
         styles={{ body: { padding: '0px' } }}
         mask={false}
         closable={false}

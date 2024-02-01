@@ -4,7 +4,7 @@ import { Canvas } from './Canvas'
 function App() {
   return (
     <>
-      <Canvas plotId='abc' />
+      <Canvas plotId='plt-1' />
     </>
   )
 }

@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import { LinePlotProps, Plot } from "../state/plots/dto";
+import { Plot } from "../state/plots/dto";
 import { buildScale } from "../utils/d3";
 import { d3ExistOrAppend } from "../utils/d3";
 import { LinearAxis } from "../state/aces/dto";
@@ -24,12 +24,12 @@ export const drawCircularBar = (
   const _XScale = buildScale(xAxis, chart.rect);
   const _YScale = buildScale(yAxis, chart.rect);
 
-  const plotProps = plot.plotProps as LinePlotProps;
+  // const plotProps = plot.plotProps as LinePlotProps;
 
   plt
     .datum(data.values)
     .attr("fill", "none")
-    .attr("stroke", plotProps.color)
+    // .attr("stroke", plotProps.color)
     .attr("stroke-width", 3)
     .attr(
       "d",

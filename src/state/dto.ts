@@ -23,10 +23,10 @@ export enum ScaleType {
   Band,
 }
 export enum PlotType {
-  SCATTER,
-  LINE,
-  COLUMNS,
-  PIE,
-  CIRCULAR_BAR,
-  SPIDER
+  SCATTER = "SCATTER",
+  LINE = "LINE",
+  COLUMNS = "COLUMNS",
+  PIE = "PIE",
+  CIRCULAR_BAR = "CIRCULAR_BAR",
+  SPIDER = "SPIDER"
 }

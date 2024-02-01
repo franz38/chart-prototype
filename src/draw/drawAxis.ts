@@ -23,6 +23,7 @@ export const _drawAxis = (
       .select(`g.${plotId}`)
       .select("g.acesBox")
       .select("g.shapes");
+      
     _svg.select(`g.${axis.position}`).remove();
     const ax = _svg.append("g").attr("class", axis.position);
     let ax2: any;

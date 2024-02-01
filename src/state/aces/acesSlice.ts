@@ -5,6 +5,8 @@ import {
   Scale,
   Axis,
   RadarAxis,
+  AxisType,
+  CircularAxis,
 } from "./dto";
 import { Dataset } from "../dto";
 import { getColumn } from "../../utils/data";
@@ -27,61 +29,73 @@ const testSlice = createSlice({
     changeAxisKey: (
       state,
       action: PayloadAction<{
-        axis: LinearAxis | undefined;
+        axis: Axis | undefined;
         dataset: Dataset | undefined;
         newKey: string;
       }>
     ) => {
       if (!action.payload.axis || !action.payload.dataset) return;
-
-      const axis = action.payload.axis;
       const data = getColumn(action.payload.dataset, action.payload.newKey);
 
-      if (axis.position === AxisPosition.CIRCULAR) {
+      if (action.payload.axis.type === AxisType.Linear){
+        const axis = action.payload.axis as LinearAxis;
+  
+        if (axis.position === AxisPosition.CIRCULAR) {
+          state.forEach((ax, id) => {
+            if (ax.id === axis.id) {
+              state[id] = { ...axis, key: action.payload.newKey };
+            }
+          });
+        } else if (typeof data[0] === "number") {
+          const newScale: Scale = {
+            ...axis.scale,
+            type: "linear",
+            props: {
+              ...axis.scale.props,
+              domain: [Math.min(...data), Math.max(...data)],
+            },
+          };
+          state.forEach((ax, id) => {
+            if (ax.id === axis.id) {
+              state[id] = {
+                ...axis,
+                key: action.payload.newKey,
+                scale: newScale,
+              };
+            }
+          });
+        } else if (typeof data[0] === "string") {
+          const newScale: Scale = {
+            ...axis.scale,
+            type: "band",
+            props: {
+              ...axis.scale.props,
+              domain: Array.from(
+                new Set<string>(data.map((d) => d as string)).values()
+              ),
+            },
+          };
+          state.forEach((ax, id) => {
+            if (ax.id === axis.id) {
+              state[id] = {
+                ...axis,
+                key: action.payload.newKey,
+                scale: newScale,
+              };
+            }
+          });
+        }
+
+      }
+      else if (action.payload.axis.type === AxisType.Circular){
+        const axis = action.payload.axis as CircularAxis;
         state.forEach((ax, id) => {
           if (ax.id === axis.id) {
             state[id] = { ...axis, key: action.payload.newKey };
           }
         });
-      } else if (typeof data[0] === "number") {
-        const newScale: Scale = {
-          ...axis.scale,
-          type: "linear",
-          props: {
-            ...axis.scale.props,
-            domain: [Math.min(...data), Math.max(...data)],
-          },
-        };
-        state.forEach((ax, id) => {
-          if (ax.id === axis.id) {
-            state[id] = {
-              ...axis,
-              key: action.payload.newKey,
-              scale: newScale,
-            };
-          }
-        });
-      } else if (typeof data[0] === "string") {
-        const newScale: Scale = {
-          ...axis.scale,
-          type: "band",
-          props: {
-            ...axis.scale.props,
-            domain: Array.from(
-              new Set<string>(data.map((d) => d as string)).values()
-            ),
-          },
-        };
-        state.forEach((ax, id) => {
-          if (ax.id === axis.id) {
-            state[id] = {
-              ...axis,
-              key: action.payload.newKey,
-              scale: newScale,
-            };
-          }
-        });
       }
+
 
       return state;
     },

@@ -2,24 +2,26 @@ import { Button, Flex, Modal, Steps, Upload, UploadFile } from "antd"
 import { useState } from "react"
 import { useDispatch } from "react-redux"
 import { addPlot } from "../state/plots/plotsSlice"
-import { newColumnsPlot, newLinePlot, newPiePlot, newScatterPlot, newSpiderPlot } from "../state/plots/dto"
+import { newLinePlot, newPiePlot, newScatterPlot } from "../state/plots/dto"
 import { loadLocalDs, onFileUpload } from "../utils/data"
 import { Dataset, PlotType } from "../state/dto"
-import { newBottomAxis, newCircularAxis, newLeftAxis, newRadarAxis } from "../state/aces/dto"
-import { addAces, changeAxisKey, changeRadarAxisKey } from "../state/aces/acesSlice"
+import { newBottomAxis, newCircularAxis, newLeftAxis } from "../state/aces/dto"
+import { addAces, changeAxisKey } from "../state/aces/acesSlice"
 import { UploadChangeParam } from "antd/es/upload"
 import { UploadIcon } from "lucide-react"
+import { setSelected } from "../state/selected/selectedSlice"
 
 interface SetupModalProps {
     dataset: Dataset | undefined;
     setDataset: (ds: Dataset) => void;
+    onSetupEnd: () => void;
 }
 
 export const SetupModal = (props: SetupModalProps) => {
 
     const dispatch = useDispatch()
 
-    const [step, setStep] = useState<number>(0)
+    const [step, setStep] = useState<number>(-1)
 
     const generatePlot = (plotType: PlotType) => {
         switch (plotType) {
@@ -31,6 +33,7 @@ export const SetupModal = (props: SetupModalProps) => {
                 dispatch(addAces([xAxis, yAxis]))
                 dispatch(changeAxisKey({ axis: xAxis, dataset: props.dataset, newKey: xAxis.key }))
                 dispatch(changeAxisKey({ axis: yAxis, dataset: props.dataset, newKey: yAxis.key }))
+                dispatch(setSelected({type: "plot", key: plot.name}))
                 break;
             }
             case PlotType.LINE: {
@@ -41,16 +44,7 @@ export const SetupModal = (props: SetupModalProps) => {
                 dispatch(addAces([xAxis, yAxis]))
                 dispatch(changeAxisKey({ axis: xAxis, dataset: props.dataset, newKey: xAxis.key }))
                 dispatch(changeAxisKey({ axis: yAxis, dataset: props.dataset, newKey: yAxis.key }))
-                break;
-            }
-            case PlotType.COLUMNS: {
-                const xAxis = newBottomAxis(props.dataset ? props.dataset.props[0] : "")
-                const yAxis = newLeftAxis(props.dataset ? props.dataset.props[1] : "")
-                const plot = newColumnsPlot(xAxis.id, yAxis.id)
-                dispatch(addPlot(plot))
-                dispatch(addAces([xAxis, yAxis]))
-                dispatch(changeAxisKey({ axis: xAxis, dataset: props.dataset, newKey: xAxis.key }))
-                dispatch(changeAxisKey({ axis: yAxis, dataset: props.dataset, newKey: yAxis.key }))
+                dispatch(setSelected({type: "plot", key: plot.name}))
                 break;
             }
             case PlotType.PIE: {
@@ -58,16 +52,29 @@ export const SetupModal = (props: SetupModalProps) => {
                 const plot = newPiePlot(circularAxis.id)
                 dispatch(addPlot(plot))
                 dispatch(addAces([circularAxis]))
+                dispatch(setSelected({type: "plot", key: plot.name}))
                 break;
             }
-            case PlotType.SPIDER: {
-                const aces = props.dataset ? props.dataset.props.map(prop => newRadarAxis(prop)) : []
-                const plot = newSpiderPlot(aces.map(ax => ax.id))
-                dispatch(addPlot(plot))
-                dispatch(addAces(aces))
-                aces.forEach(ax => dispatch(changeRadarAxisKey({axis: ax, dataset: props.dataset, newKey: ax.key})))
-                break;
-            }
+            // case PlotType.COLUMNS: {
+            //     const xAxis = newBottomAxis(props.dataset ? props.dataset.props[0] : "")
+            //     const yAxis = newLeftAxis(props.dataset ? props.dataset.props[1] : "")
+            //     const plot = newColumnsPlot(xAxis.id, yAxis.id)
+            //     dispatch(addPlot(plot))
+            //     dispatch(addAces([xAxis, yAxis]))
+            //     dispatch(changeAxisKey({ axis: xAxis, dataset: props.dataset, newKey: xAxis.key }))
+            //     dispatch(changeAxisKey({ axis: yAxis, dataset: props.dataset, newKey: yAxis.key }))
+            //     dispatch(setSelected({type: "plot", key: plot.name}))
+            //     break;
+            // }
+            // case PlotType.SPIDER: {
+            //     const aces = props.dataset ? props.dataset.props.map(prop => newRadarAxis(prop)) : []
+            //     const plot = newSpiderPlot(aces.map(ax => ax.id))
+            //     dispatch(addPlot(plot))
+            //     dispatch(addAces(aces))
+            //     aces.forEach(ax => dispatch(changeRadarAxisKey({axis: ax, dataset: props.dataset, newKey: ax.key})))
+            //     dispatch(setSelected({type: "plot", key: plot.name}))
+            //     break;
+            // }
             default:
                 break;
         }
@@ -78,6 +85,26 @@ export const SetupModal = (props: SetupModalProps) => {
         if (ds) props.setDataset(ds)
     }
 
+    const setupScatter = async () => {
+        props.setDataset(await loadLocalDs("./world_cups.csv"))
+        generatePlot(PlotType.SCATTER)
+        setStep(3)
+        props.onSetupEnd()
+    }
+
+    const setupLine = async () => {
+        props.setDataset(await loadLocalDs("./world_cups.csv"))
+        generatePlot(PlotType.LINE)
+        setStep(3)
+        props.onSetupEnd()
+    }
+
+    const setupPie = async () => {
+        props.setDataset(await loadLocalDs("./package.csv"))
+        generatePlot(PlotType.PIE)
+        setStep(3)
+        props.onSetupEnd()
+    }
 
     return <>
         <Modal
@@ -91,8 +118,34 @@ export const SetupModal = (props: SetupModalProps) => {
             }}
             footer={null}
             closable={false}
+            centered
         >
-            <Steps
+            {step < 0 && <>
+                <Flex vertical align="center" gap={20}>
+                    <span className="welcomeText">Welcome to QuickCharts</span>
+                    <br></br>
+                    <Flex gap={20}>
+                        <div className="demo-box" onClick={() => setupScatter()}>
+                            <img src="./plot_illustrations/ScatterPlot.png"></img>
+                            <span>Scatter plot</span>
+                        </div>
+                        <div className="demo-box" onClick={() => setupLine()}>
+                            <img src="./plot_illustrations/LinePlot.png"></img>
+                            <span>Line plot</span>
+                        </div>
+                        <div className="demo-box" onClick={() => setupPie()}>
+                            <img src="./plot_illustrations/PiePlot.png"></img>
+                            <span>Pie plot</span>
+                        </div>
+                        <div className="demo-box" onClick={() => setStep(step+1)}>
+                            <img src="./plot_illustrations/empty.png"></img>
+                            <span>Empty canvas</span>
+                        </div>
+                    </Flex>
+                </Flex>
+            </>}
+
+            {step >= 0 && <><Steps
                 size="small"
                 current={step}
                 items={[
@@ -107,11 +160,11 @@ export const SetupModal = (props: SetupModalProps) => {
                     <Flex vertical gap={10}>
 
                         <Button onClick={async () => {
-                            props.setDataset(await loadLocalDs("./package.csv"));
+                            props.setDataset(await loadLocalDs("./world_cups.csv"));
                             setStep(step + 1)
                         }}>Random dataset</Button>
 
-                        <Button onClick={async () => { setStep(step + 1) }}>No dataset</Button>
+                        <Button onClick={async () => { setStep(step + 1) }}>No dataset (you can add one later)</Button>
 
                         <Upload
                             name="avatar"
@@ -138,12 +191,11 @@ export const SetupModal = (props: SetupModalProps) => {
                     </Flex>
                 </>}
                 {step === 1 && <Flex vertical gap={10}>
-                    <Button onClick={() => { generatePlot(PlotType.SCATTER); setStep(step + 1) }}>Scatter plot</Button>
-                    <Button onClick={() => { generatePlot(PlotType.LINE); setStep(step + 1) }}>Line plot</Button>
-                    <Button onClick={() => { generatePlot(PlotType.COLUMNS); setStep(step + 1) }}>Columns plot</Button>
-                    <Button onClick={() => { generatePlot(PlotType.PIE); setStep(step + 1) }}>Pie plot</Button>
+                    <Button onClick={() => { props.onSetupEnd(); generatePlot(PlotType.SCATTER); setStep(step + 1) }}>Scatter plot</Button>
+                    <Button onClick={() => { props.onSetupEnd(); generatePlot(PlotType.LINE); setStep(step + 1) }}>Line plot</Button>
+                    <Button onClick={() => { props.onSetupEnd(); generatePlot(PlotType.PIE); setStep(step + 1) }}>Pie plot</Button>
                 </Flex>}
-            </Flex>
+            </Flex></>}
         </Modal>
     </>
 }

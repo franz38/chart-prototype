@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Typography, Flex, Form, Select, Divider } from "antd";
+import { Typography, Flex, Form, Divider } from "antd";
 import { Plot, ScatterPlot } from "../../state/plots/dto";
 import { PlotType } from "../../state/dto";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,11 +11,12 @@ import { isVertical } from "../../utils/axis";
 import { panelSection, sectionHeader } from "../interfaceUtils";
 import { changeAxisKey } from "../../state/aces/acesSlice";
 import { SelectInput } from "../../formComponents/SelectInput";
-import { Move3D, Ruler, Tag } from "lucide-react";
+import { Box, Move3D, Ruler, Tag } from "lucide-react";
 import { inputIconProps } from "../../formComponents/styleConst";
-import { ColorInput } from "../../formComponents/ColorInput";
 import { NumberInput } from "../../formComponents/NumberInput";
 import { AxisType, LinearAxis } from "../../state/aces/dto";
+import { getRange } from "../../utils/data";
+import { DynamicColor } from "../../formComponents/DynamicColor";
 
 const { Text } = Typography;
 
@@ -70,13 +71,12 @@ export const ScatterPlotPanel = (props: IAxisPanel) => {
 
             <Text {...sectionHeader}>Plot type</Text>
             <Flex {...panelSection}>
-                <Select
-                    style={{ width: "100%" }}
+                <SelectInput
+                    label={<Box {...inputIconProps} />}
                     options={[
-                        { value: PlotType.COLUMNS, label: "Columns" },
                         { value: PlotType.LINE, label: "Line" },
                         { value: PlotType.SCATTER, label: "Scatter" },
-                        { value: PlotType.PIE, label: "Pie/Donuts" }
+                        { value: PlotType.PIE, label: "Pie/Donuts" },
                     ]}
                     value={plot.type}
                     onChange={(val) => props.changePlotType(plot, val)}
@@ -132,22 +132,50 @@ export const ScatterPlotPanel = (props: IAxisPanel) => {
             <Divider />
 
             <Text {...sectionHeader} >Color</Text>
-            <Flex {...panelSection}>
-                <ColorInput
-                    value={plot.plotProps.color}
-                    onChange={(val) => editPlot({ ...plot, plotProps: { ...plot.plotProps, color: val } })}
-                />            
+            <Flex {...panelSection} vertical>
+                <DynamicColor
+                    value={plot.color}
+                    onChange={(newColor) => editPlot({ ...plot, color: newColor })}
+                    dataset={props.dataset}
+                />
             </Flex>
 
             <Divider />
 
             <Text {...sectionHeader} >Size</Text>
             <Flex {...panelSection}>
-                <NumberInput
-                    label={<Ruler  {...inputIconProps} />}
-                    value={plot.plotProps.size}
-                    onChange={(val) => editPlot({ ...plot, plotProps: { ...plot.plotProps, size: val } })}
+                <SelectInput
+                    label={<Tag {...inputIconProps} />}
+                    options={[{ value: "fixed", label: "fixed" }, ...props.dataset?.props.map(p => ({ value: p, label: p })) ?? []]}
+                    value={plot.size.key ? plot.size.key : "fixed"}
+                    onChange={(val) => {
+                        if (val !== "fixed")
+                            editPlot({ ...plot, size: { ...plot.size, key: val, domain: getRange(props.dataset, val) as number[], range: plot.size.range ?? [2, 5] } })
+                        else
+                            editPlot({ ...plot, size: { ...plot.size, key: undefined } })
+                    }}
                 />
+                {!plot.size.key &&
+                    <NumberInput
+                        label={<Ruler  {...inputIconProps} />}
+                        value={plot.size.fixedValue}
+                        onChange={(val) => editPlot({ ...plot, size: { ...plot.size, fixedValue: val } })}
+                    />
+                }
+                {plot.size.key && <>
+                    <NumberInput
+                        minValue={0}
+                        label={<Ruler  {...inputIconProps} />}
+                        value={(plot.size.range as number[])[0]}
+                        onChange={(val) => editPlot({ ...plot, size: { ...plot.size, range: [val, (plot.size.range as number[])[1]] } })}
+                    />
+                    <NumberInput
+                        minValue={0}
+                        label={<Ruler  {...inputIconProps} />}
+                        value={(plot.size.range as number[])[1]}
+                        onChange={(val) => editPlot({ ...plot, size: { ...plot.size, range: [(plot.size.range as number[])[0], val] } })}
+                    />
+                </>}
             </Flex>
 
 

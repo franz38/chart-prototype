@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { Typography, Flex, Form, Select, Divider } from "antd";
-import { Plot, ScatterPlot } from "../../state/plots/dto";
+import { Typography, Flex, Form, Divider } from "antd";
+import { LinePlot, Plot } from "../../state/plots/dto";
 import { PlotType } from "../../state/dto";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../state/store";
@@ -11,7 +11,7 @@ import { isVertical } from "../../utils/axis";
 import { panelSection, sectionHeader } from "../interfaceUtils";
 import { changeAxisKey } from "../../state/aces/acesSlice";
 import { SelectInput } from "../../formComponents/SelectInput";
-import { Move3D, Ruler, Tag } from "lucide-react";
+import { Box, Move3D, Ruler, Tag } from "lucide-react";
 import { inputIconProps } from "../../formComponents/styleConst";
 import { ColorInput } from "../../formComponents/ColorInput";
 import { NumberInput } from "../../formComponents/NumberInput";
@@ -27,7 +27,7 @@ interface IAxisPanel {
 export const LinePlotPanel = (props: IAxisPanel) => {
 
     const dispatch = useDispatch()
-    const plot = useSelector((state: RootState) => state.plots.find(plt => plt.name === (state.selection.selection as Selection).key)) as ScatterPlot
+    const plot = useSelector((state: RootState) => state.plots.find(plt => plt.name === (state.selection.selection as Selection).key)) as LinePlot
     const aces = useSelector((state: RootState) => state.aces).filter(ax => ax.type === AxisType.Linear) as LinearAxis[]
 
     const updateKeyProps = (newKey: string, yorx: "x" | "y") => {
@@ -47,7 +47,7 @@ export const LinePlotPanel = (props: IAxisPanel) => {
         }
     }
 
-    const editPlot = (plt: ScatterPlot) => {
+    const editPlot = (plt: LinePlot) => {
         dispatch(updatePlot(plt))
     }
 
@@ -70,13 +70,12 @@ export const LinePlotPanel = (props: IAxisPanel) => {
 
             <Text {...sectionHeader}>Plot type</Text>
             <Flex {...panelSection}>
-                <Select
-                    style={{ width: "100%" }}
+                <SelectInput
+                    label={<Box {...inputIconProps} />}
                     options={[
-                        { value: PlotType.COLUMNS, label: "Columns" },
                         { value: PlotType.LINE, label: "Line" },
                         { value: PlotType.SCATTER, label: "Scatter" },
-                        { value: PlotType.PIE, label: "Pie/Donuts" }
+                        { value: PlotType.PIE, label: "Pie/Donuts" },
                     ]}
                     value={plot.type}
                     onChange={(val) => props.changePlotType(plot, val)}
@@ -131,22 +130,31 @@ export const LinePlotPanel = (props: IAxisPanel) => {
 
             <Divider />
 
-            <Text {...sectionHeader} >Color</Text>
+            <Text {...sectionHeader} >Line color</Text>
             <Flex {...panelSection}>
                 <ColorInput
-                    value={plot.plotProps.color}
-                    onChange={(val) => editPlot({ ...plot, plotProps: { ...plot.plotProps, color: val } })}
+                    value={plot.color}
+                    onChange={(val) => editPlot({ ...plot, color: val })}
+                />
+            </Flex>
+
+            <Text {...sectionHeader} >Fill color</Text>
+            <Flex {...panelSection}>
+                <ColorInput
+                    value={plot.fill}
+                    onChange={(val) => editPlot({ ...plot, fill: val })}
                 />
             </Flex>
 
             <Divider />
 
-            <Text {...sectionHeader} >Size</Text>
+            <Text {...sectionHeader} >Thickness</Text>
             <Flex {...panelSection}>
                 <NumberInput
+                    minValue={0}
                     label={<Ruler  {...inputIconProps} />}
-                    value={plot.plotProps.size}
-                    onChange={(val) => editPlot({ ...plot, plotProps: { ...plot.plotProps, size: val } })}
+                    value={plot.size}
+                    onChange={(val) => editPlot({ ...plot, size: val })}
                 />
             </Flex>
 

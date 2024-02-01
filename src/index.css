@@ -1,5 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,400;0,500;1,500&display=swap');
+
+
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Raleway, Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -28,6 +31,7 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  font-family: "Raleway";
 }
 
 h1 {
@@ -67,25 +71,44 @@ button:focus-visible {
   }
 }
 
-span.ant-upload-wrapper{
-  div.ant-upload {
-    width: 100% !important;
-    span.ant-upload{
-      width: 100%;
-    }
-  }
+span.ant-upload-wrapper > div.ant-upload {
+  width: 100% !important; 
+}
+
+span.ant-upload-wrapper > div.ant-upload > span.ant-upload{
+  width: 100%;
 }
 
 .mainButton {
   background-color: rgb(68, 68, 68);
   color: #fff;
-  &:hover{
-    background-color: rgb(68, 68, 68) !important;
-    color: #fff !important;
-  }
-  svg {
-    stroke: #fff;
-  }
+  
+}
+.mainButton:hover{
+  background-color: rgb(68, 68, 68) !important;
+  color: #fff !important;
+}
+.mainButton > svg {
+  stroke: #fff;
+}
+
+.uiStyle{
+  display: inline-block;
+  border-radius: 2px;
+  border: 1px solid #eee;
+  height: 30px;
+  line-height: 30px;
+  padding:1px 4px;
+}
+
+img.modalImg{
+  width: 100%;
+  height: auto;
+}
+
+.welcomeText{
+  font-size: 1.5rem;
+  font-weight: 500;
 }
 
 .selectInput {
@@ -95,13 +118,50 @@ span.ant-upload-wrapper{
   border: 1px solid #eee;
   height: 30px;
   line-height: 30px;
-  div{
-    display: flex;
-    width: 100%;
-    width: -webkit-fill-available;
-  }
-  select{
-    border: 0px;
-    outline: none;
-  }
+  
+  
+}
+
+.selectInput > div{
+  display: flex;
+  width: 100%;
+  width: -webkit-fill-available;
+}
+
+select{
+  border: 0px;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%23bbb'><polygon points='0,20 100,20 50,70'/></svg>") no-repeat;
+  background-size: 12px;
+  background-position: calc(100% - 20px) center;
+  background-repeat: no-repeat;
+  background-color: transparent;
+}
+
+
+.demo-box{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+  cursor: pointer;
+}
+
+.demo-box:hover > img {
+  border-color: #03a9f4;
+}
+
+.demo-box:hover > span {
+  text-decoration: underline;
+}
+
+.demo-box img {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  border: 2px solid transparent;
 }

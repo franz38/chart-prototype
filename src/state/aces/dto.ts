@@ -77,10 +77,10 @@ export interface RadarAxis extends ISelectable{
 export type Axis = LinearAxis | CircularAxis | RadarAxis;
 
 const defaultStyle: AxisStyle = {
-  lineColor: "#ccc",
+  lineColor: "#555",
   lineThickness: 1,
-  fontColor: "#ccc",
-  tickColor: "#ccc",
+  fontColor: "#555",
+  tickColor: "#555",
   tickThickness: 1,
   fontSize: 12,
   lineVisible: true,
@@ -96,13 +96,13 @@ const defaultScale: Scale = {
   },
 };
 
-const defaultCircularScale: Scale = {
-  type: "linear",
-  props: {
-    domain: [0, 360],
-    range: [0, 1],
-  },
-};
+// const defaultCircularScale: Scale = {
+//   type: "linear",
+//   props: {
+//     domain: [0, 360],
+//     range: [0, 1],
+//   },
+// };
 
 export const newLeftAxis = (key?: string, id?: string): LinearAxis => ({
   type: AxisType.Linear,
@@ -111,9 +111,9 @@ export const newLeftAxis = (key?: string, id?: string): LinearAxis => ({
   scale: defaultScale,
   id: id ?? "left axis",
   key: key ?? "",
-  invert: false,
+  invert: true,
   showGrid: false,
-  labelStyle: { color: "#ccc", alignSelf: "center" },
+  labelStyle: { color: "#555", alignSelf: "center" },
   label: undefined,
   style: defaultStyle,
 });
@@ -127,23 +127,15 @@ export const newBottomAxis = (key?: string, id?: string): LinearAxis => ({
   key: key ?? "",
   invert: false,
   showGrid: false,
-  labelStyle: { color: "#ccc", alignSelf: "center" },
+  labelStyle: { color: "#555", alignSelf: "center" },
   label: undefined,
   style: defaultStyle,
 });
 
-export const newCircularAxis = (key?: string, id?: string): LinearAxis => ({
+export const newCircularAxis = (key?: string, id?: string): CircularAxis => ({
   type: AxisType.Circular,
-  position: AxisPosition.CIRCULAR,
-  margin: 10,
-  scale: defaultCircularScale,
   id: id ?? "circular axis",
   key: key ?? "",
-  invert: false,
-  showGrid: false,
-  labelStyle: { color: "#ccc", alignSelf: "center" },
-  label: undefined,
-  style: defaultStyle,
 });
 
 export const newRadarAxis = (key?: string, id?: string): RadarAxis => ({

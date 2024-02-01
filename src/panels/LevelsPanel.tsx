@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../state/store";
 import { setSelected } from "../state/selected/selectedSlice";
 import { Move3D, Box, ScatterChart, LineChart, BarChart, PieChart, HelpCircle } from "lucide-react"
+import { AxisType } from "../state/aces/dto";
 
 const iconAttributes = {
     size: 14,
@@ -62,7 +63,7 @@ export const LevelsPanel = () => {
                 >{plot.name}</Button>)
         }
         {
-            aces.map(axis =>
+            aces.filter(ax => ax.type === AxisType.Linear).map(axis =>
                 <Button
                     key={axis.id}
                     type="text"

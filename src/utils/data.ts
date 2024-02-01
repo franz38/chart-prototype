@@ -1,9 +1,19 @@
 import { Dataset } from "../state/dto";
 import * as d3 from "d3";
 
-export const getColumn = (dataset: Dataset, prop: string) => {
+export const getColumn = (dataset: Dataset|undefined, prop: string) => {
+  if (!dataset) return []
   return dataset.values.map((row) => row[prop]);
 };
+
+export const getRange = (dataset: Dataset|undefined, prop: string) => {
+  if (!dataset) return [0,1]
+  const column = getColumn(dataset, prop)
+  if (typeof column[0] === "number")
+    return d3.extent(getColumn(dataset, prop))
+  else if (typeof column[0] === "string")
+    return [... new Set(column as string[])]
+}
 
 export const parseDS = (ds: Dataset): Dataset => {
   ds.values.forEach((row) => {
