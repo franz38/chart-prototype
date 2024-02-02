@@ -1,4 +1,4 @@
-import { ColorPicker, Flex } from "antd";
+import { ColorPicker } from "antd";
 
 interface ColorInputProps {
     value1: string;
@@ -9,8 +9,9 @@ interface ColorInputProps {
 export const ColorGradient = (props: ColorInputProps) => {
 
     return <>
-        <Flex vertical style={{ width: "100%", border: "1px solid #eee" }}>
-            <Flex align="center" justify="space-between" style={{ width: "100%", marginTop: "4px", marginBottom: "4px" }}>
+        {/* <Flex vertical style={{ width: "100%", border: "1px solid #eee" }}> */}
+            {/* <Flex align="center" justify="space-between" style={{ width: "100%", marginTop: "4px", marginBottom: "4px" }}> */}
+            <div className="flex flex-row w-full border border-[#eee] py-[4px]">
                 <ColorPicker
                     value={props.value1 ?? "#000"}
                     onChange={(val) => props.onChange(val.toHexString(), props.value2)}
@@ -29,8 +30,6 @@ export const ColorGradient = (props: ColorInputProps) => {
                     size="small"
                     style={{ marginRight: "4px" }}
                 />
-            </Flex>
-            
-        </Flex>
+            </div>
     </>
 }

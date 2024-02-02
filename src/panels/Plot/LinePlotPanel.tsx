@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { Typography, Flex, Form, Divider } from "antd";
 import { LinePlot, Plot } from "../../state/plots/dto";
 import { PlotType } from "../../state/dto";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,7 +7,6 @@ import { updatePlot } from "../../state/plots/plotsSlice";
 import { Selection } from "../../state/selected/selectedSlice"
 import { Dataset } from "../../state/dto";
 import { isVertical } from "../../utils/axis";
-import { panelSection, sectionHeader } from "../interfaceUtils";
 import { changeAxisKey } from "../../state/aces/acesSlice";
 import { SelectInput } from "../../formComponents/SelectInput";
 import { Box, Move3D, Ruler, Tag } from "lucide-react";
@@ -16,8 +14,9 @@ import { inputIconProps } from "../../formComponents/styleConst";
 import { ColorInput } from "../../formComponents/ColorInput";
 import { NumberInput } from "../../formComponents/NumberInput";
 import { AxisType, LinearAxis } from "../../state/aces/dto";
+import { Section } from "../../ui-elements/form/Section";
+import { HR } from "../../ui-elements/HR";
 
-const { Text } = Typography;
 
 interface IAxisPanel {
     dataset: Dataset | undefined;
@@ -66,10 +65,11 @@ export const LinePlotPanel = (props: IAxisPanel) => {
     }, [aces])
 
     return <>
-        <Form>
+        <div className="text-left flex flex-col gap-y-4">
 
-            <Text {...sectionHeader}>Plot type</Text>
-            <Flex {...panelSection}>
+            <span></span>
+
+            <Section label="Plot type">
                 <SelectInput
                     label={<Box {...inputIconProps} />}
                     options={[
@@ -80,12 +80,11 @@ export const LinePlotPanel = (props: IAxisPanel) => {
                     value={plot.type}
                     onChange={(val) => props.changePlotType(plot, val)}
                 />
-            </Flex>
+            </Section>
 
-            <Divider />
+            <HR />
 
-            <Text {...sectionHeader}>X Axis</Text>
-            <Flex {...panelSection}>
+            <Section label="X Axis">
                 <SelectInput
                     label={<Move3D {...inputIconProps} />}
                     options={aces.filter(ax => !isVertical(ax)).map(ax => ({ value: ax.id, label: ax.id }))}
@@ -103,12 +102,11 @@ export const LinePlotPanel = (props: IAxisPanel) => {
                         newKey: val
                     }))}
                 />
-            </Flex>
+            </Section>
 
-            <Divider />
+            <HR />
 
-            <Text {...sectionHeader}>Y Axis</Text>
-            <Flex {...panelSection}>
+            <Section label="Y Axis">
                 <SelectInput
                     label={<Move3D {...inputIconProps} />}
                     options={aces.filter(ax => isVertical(ax)).map(ax => ({ value: ax.id, label: ax.id }))}
@@ -126,40 +124,37 @@ export const LinePlotPanel = (props: IAxisPanel) => {
                         newKey: val
                     }))}
                 />
-            </Flex>
+            </Section>
 
-            <Divider />
+            <HR />
 
-            <Text {...sectionHeader} >Line color</Text>
-            <Flex {...panelSection}>
+            <Section label="Line color">
                 <ColorInput
                     value={plot.color}
                     onChange={(val) => editPlot({ ...plot, color: val })}
                 />
-            </Flex>
+            </Section>
 
-            <Text {...sectionHeader} >Fill color</Text>
-            <Flex {...panelSection}>
+            <Section label="Fill color">
                 <ColorInput
                     value={plot.fill}
                     onChange={(val) => editPlot({ ...plot, fill: val })}
                 />
-            </Flex>
+            </Section>
 
-            <Divider />
+            <HR />
 
-            <Text {...sectionHeader} >Thickness</Text>
-            <Flex {...panelSection}>
+            <Section label="Thickness">
                 <NumberInput
                     minValue={0}
                     label={<Ruler  {...inputIconProps} />}
                     value={plot.size}
                     onChange={(val) => editPlot({ ...plot, size: val })}
                 />
-            </Flex>
+            </Section>
 
 
-        </Form>
+        </div>
 
     </>
 }

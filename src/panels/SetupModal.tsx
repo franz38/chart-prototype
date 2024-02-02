@@ -122,7 +122,8 @@ export const SetupModal = (props: SetupModalProps) => {
         >
             {step < 0 && <>
                 <Flex vertical align="center" gap={20}>
-                    <span className="welcomeText">Welcome to QuickCharts</span>
+                    <span className="welcomeText underline">Welcome to QuickCharts</span>
+                    <span>Select one of the examples or start from scratch!</span>
                     <br></br>
                     <Flex gap={20}>
                         <div className="demo-box" onClick={() => setupScatter()}>

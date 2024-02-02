@@ -1,4 +1,3 @@
-import { Typography, Flex, Form, Divider } from "antd";
 import { LinearAxis, AxisStyle, AxisPosition, Scale } from "../../state/aces/dto";
 import { MenuOutlined } from '@ant-design/icons';
 import { NumberInput } from "../../formComponents/NumberInput";
@@ -11,13 +10,14 @@ import { resizeH, resizeW } from "../../state/chart/chartSlice";
 import { Selection } from "../../state/selected/selectedSlice"
 import { CheckInput } from "../../formComponents/CheckInput";
 import { Dataset } from "../../state/dto";
-import { panelSection, sectionHeader } from "../interfaceUtils";
 import { TextInput } from "../../formComponents/TextInput";
 import { Brackets, FlipHorizontal2, Tag, Type } from "lucide-react";
 import { SelectInput } from "../../formComponents/SelectInput";
 import { inputIconProps } from "../../formComponents/styleConst";
+import { HR } from "../../ui-elements/HR";
+import { Section } from "../../ui-elements/form/Section";
+import { Label } from "../../ui-elements/Label";
 
-const { Text } = Typography;
 
 interface IAxisPanel {
     dataset: Dataset | undefined;
@@ -79,23 +79,21 @@ export const AxisPanel = (props: IAxisPanel) => {
         })
     }
 
-    return <Form>
+    return <div className="text-left flex flex-col gap-y-4">
 
-        <Text {...sectionHeader}>Property</Text>
-        <Flex {...panelSection}>
+        <Section label="Property">
             <SelectInput
                 label={<Tag {...inputIconProps} />}
                 options={props.dataset?.props.map(p => ({ value: p, label: p }))}
                 value={axis.key}
                 onChange={(val) => dispatch(changeAxisKey({ axis: axis, dataset: props.dataset, newKey: val }))}
             />
-        </Flex>
+        </Section>
 
-        <Divider />
+        <HR />
 
         {axis.scale.type === "linear" && <>
-            <Text {...sectionHeader}>Domain</Text>
-            <Flex {...panelSection}>
+            <Section label="Domain">
                 <NumberInput
                     label={<Brackets {...inputIconProps} />}
                     value={axis.scale.props.domain[0] as number}
@@ -106,11 +104,11 @@ export const AxisPanel = (props: IAxisPanel) => {
                     value={axis.scale.props.domain[1] as number}
                     onChange={(val) => updateDomain([axis.scale.props.domain[0] as number, (val as number)])}
                 />
-            </Flex>
+            </Section>
         </>}
 
         {axis.scale.type === "band" && <>
-            <Text {...sectionHeader}>Domain values</Text>
+            <Label>Domain values</Label>
             {axis.scale.props.domain.map(v =>
                 <p key={v}>{v}</p>
             )}
@@ -118,9 +116,9 @@ export const AxisPanel = (props: IAxisPanel) => {
 
         {axis.position !== AxisPosition.CIRCULAR && <>
             
-            <Divider />
-            <Text {...sectionHeader}>Layout</Text>
-            <Flex {...panelSection}>
+            <HR />
+
+            <Section label="Layout">
                 <NumberInput
                     label={"M"}
                     value={axis.margin}
@@ -136,22 +134,22 @@ export const AxisPanel = (props: IAxisPanel) => {
                     value={axis.invert}
                     onChange={(val) => _updateAxis({ ...axis, invert: val })}
                 />
-            </Flex>
+            </Section>
 
-            <Divider />
-            <Text {...sectionHeader}>Label</Text>
-            <Flex {...panelSection}>
+            <HR />
+
+            <Section label="Label">
                 <TextInput
                     label={<Type  {...iconAttributes} />}
                     value={axis.label ?? axis.key}
                     onChange={v => _updateAxis({ ...axis, label: v })}
                 />
                 {/* <AlignInput /> */}
-            </Flex>
+            </Section>
 
-            <Divider />
-            <Text {...sectionHeader}>Line</Text>
-            <Flex {...panelSection}>
+            <HR />
+
+            <Section label="Line">
                 <NumberInput
                     label={<MenuOutlined />}
                     value={axis.style.lineThickness}
@@ -165,11 +163,11 @@ export const AxisPanel = (props: IAxisPanel) => {
                     value={axis.style.lineColor}
                     onChange={(v) => updateStyle({ ...axis.style, lineColor: v })}
                 />
-            </Flex>
+            </Section>
 
-            <Divider />
-            <Text {...sectionHeader}>Ticks</Text>
-            <Flex {...panelSection}>
+            <HR />
+
+            <Section label="Ticks">
                 <NumberInput
                     label={<MenuOutlined />}
                     value={axis.style.tickThickness}
@@ -183,11 +181,10 @@ export const AxisPanel = (props: IAxisPanel) => {
                     value={axis.style.tickColor}
                     onChange={(val) => updateStyle({ ...axis.style, tickColor: val })}
                 />
-            </Flex>
-            <Divider />
+            </Section>
+            <HR />
 
-            <Text {...sectionHeader}>Text</Text>
-            <Flex {...panelSection}>
+            <Section label="Text">
                 <NumberInput
                     label={<MenuOutlined />}
                     value={axis.style.fontSize}
@@ -201,8 +198,8 @@ export const AxisPanel = (props: IAxisPanel) => {
                     value={axis.style.fontColor}
                     onChange={(val) => updateStyle({ ...axis.style, fontColor: val })}
                 />
-            </Flex>
+            </Section>
         </>}
 
-    </Form>
+    </div>
 }

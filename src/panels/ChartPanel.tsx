@@ -1,5 +1,3 @@
-
-import { Typography, Flex, Form, Divider } from "antd";
 import { AxisPosition, LinearAxis } from "../state/aces/dto";
 import { NumberInput } from "../formComponents/NumberInput";
 import { ColorInput } from "../formComponents/ColorInput";
@@ -8,10 +6,9 @@ import { RootState } from "../state/store";
 import { moveX, moveY, resizeW, resizeH, setColor, setPadding } from "../state/chart/chartSlice";
 import { CheckInput } from "../formComponents/CheckInput";
 import { updateAxis } from "../state/aces/acesSlice";
-import { panelSection, sectionHeader } from "./interfaceUtils";
 import { PlotType } from "../state/dto";
-
-const { Text } = Typography;
+import { Section } from "../ui-elements/form/Section";
+import { HR } from "../ui-elements/HR";
 
 
 export const ChartPanel = () => {
@@ -26,9 +23,11 @@ export const ChartPanel = () => {
     }
 
     return <>
-        <Form>
-            <Text {...sectionHeader}>Layout</Text>
-            <Flex {...panelSection}>
+        <div className="text-left flex flex-col gap-y-4">
+            
+            <span></span>
+            
+            <Section label="Layout">
                 <NumberInput
                     label="X"
                     value={chart.rect.x}
@@ -49,28 +48,27 @@ export const ChartPanel = () => {
                     value={chart.rect.h}
                     onChange={(val) => dispatch(resizeH(val))}
                 />
-            </Flex>
+            </Section>
 
-            <Divider />
-            <Text {...sectionHeader}>Background</Text>
-            <Flex {...panelSection}>
+            <HR />
+
+            <Section label="Background">
                 <ColorInput
                     value={chart.backgroundColor}
                     onChange={val => dispatch(setColor(val))}
                 />
-            </Flex>
+            </Section>
 
-            <Divider />
+            <HR />
 
-            <Text {...sectionHeader}>Padding</Text>
-            <Flex justify="center" style={{ paddingTop: ".5rem" }}>
+            <Section label="Padding">
                 <NumberInput
                     label={"T"}
                     value={chart.padding[0]}
                     onChange={(val) => editPadding((val as number), 0)}
                 />
-            </Flex>
-            <Flex {...panelSection}>
+            </Section>
+            <Section>
                 <NumberInput
                     label={"L"}
                     value={chart.padding[3]}
@@ -81,20 +79,19 @@ export const ChartPanel = () => {
                     value={chart.padding[1]}
                     onChange={(val) => editPadding((val as number), 1)}
                 />
-            </Flex>
-            <Flex justify="center" style={{ paddingTop: ".5rem" }}>
+            </Section>
+            <Section justify="center" style={{ paddingTop: ".5rem" }}>
                 <NumberInput
                     label={"B"}
                     value={chart.padding[2]}
                     onChange={(val) => editPadding((val as number), 2)}
                 />
-            </Flex>
+            </Section>
 
-            <Divider />
+            <HR />
 
             {(plot && (plot.type === PlotType.SCATTER || plot.type === PlotType.LINE)) && <>
-                <Text {...sectionHeader}>Show grid</Text>
-                <Flex {...panelSection}>
+                <Section label="Show grid">
                     <CheckInput
                         label={"X"}
                         value={(aces.find(ax => (ax as LinearAxis).position == AxisPosition.BOTTOM) as LinearAxis)?.showGrid ?? false}
@@ -113,9 +110,9 @@ export const ChartPanel = () => {
                                 dispatch(updateAxis({ ...ax, showGrid: v }))
                         }}
                     />
-                </Flex>
+                </Section>
             </>}
 
-        </Form>
+        </div>
     </>
 }

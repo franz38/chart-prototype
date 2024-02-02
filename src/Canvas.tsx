@@ -1,6 +1,5 @@
 import * as d3 from "d3";
 import { useEffect, useRef, useState } from "react";
-import { Drawer } from 'antd';
 import { isVertical } from "./utils/axis";
 import { d3ExistOrAppend } from "./utils/d3";
 import { _drawAxis } from "./draw/drawAxis";
@@ -387,7 +386,7 @@ export const Canvas = (props: { plotId: string }) => {
 
     useEffect(() => {
         if (dataset) {
-            if (aces.some(ax => ax.type === AxisType.Linear)){
+            if (aces.some(ax => ax.type === AxisType.Linear)) {
                 dispatch(setAces([...aces.filter(ax => ax.type === AxisType.Linear).map(ax => ax as LinearAxis).map((ax, id) => {
                     const key = dataset.props[id]
                     const data = getColumn(dataset, key)
@@ -400,7 +399,7 @@ export const Canvas = (props: { plotId: string }) => {
                     return newAx
                 })]))
             }
-            else{
+            else {
                 dispatch(setAces([...aces.filter(ax => ax.type === AxisType.Circular).map(ax => ax as CircularAxis).map(ax => {
                     const newAx: CircularAxis = {
                         ...ax,
@@ -449,14 +448,8 @@ export const Canvas = (props: { plotId: string }) => {
             dataset={dataset}
         />
 
-        <Drawer
-            placement="right"
-            open={!!selection}
-            mask={false}
-            closable={false}
-            width={240}
-            styles={{ body: { padding: "24px 12px" } }}
-        >
+        <div id="default-sidebar" className={`overflow-y-scroll fixed top-0 pt-14 px-2 pb-6 right-0 z-40 w-60 h-screen transition-transform  ${!!selection ? "" : "translate-x-60"}  bg-white shadow-2xl `} aria-label="Sidebar">
+            
             {selection?.type === "axis" && <AxisPanel dataset={dataset} />}
 
             {(selection?.type === "plot" && plots[0] !== undefined) && <>
@@ -483,7 +476,9 @@ export const Canvas = (props: { plotId: string }) => {
 
             {selection?.type === "chart" && <ChartPanel />}
 
-        </Drawer>
+        </div>
+
+
 
         <SetupModal
             dataset={dataset}

@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Flex } from "antd";
+import { Button } from "antd";
 import { Plot } from "../state/plots/dto";
 import { PlotType } from "../state/dto";
 import { useDispatch, useSelector } from "react-redux";
@@ -43,7 +43,7 @@ export const LevelsPanel = () => {
     const aces = useSelector((state: RootState) => state.aces)
 
 
-    return <Flex vertical align="flex-start" justify="flex-start" style={{ padding: "1rem .5rem" }}>
+    return <div className="flex flex-col pt-2">
         <Button
             type="text"
             icon={<Box {...iconAttributes} />}
@@ -72,6 +72,6 @@ export const LevelsPanel = () => {
                     onClick={() => dispatch(setSelected({ type: "axis", key: axis.id }))}
                 >{axis.id}</Button>)
         }
-    </Flex>
+    </div>
 
 }

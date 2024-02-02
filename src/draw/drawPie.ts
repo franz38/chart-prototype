@@ -12,9 +12,8 @@ export const drawPie = (
   _chart: Chart,
   circularAxis: CircularAxis
 ) => {
+  if (!circularAxis) return;
 
-  if (!circularAxis) return
-  
   const plt = d3ExistOrAppend(canvas.select(`g.${plot.name}`), () =>
     canvas.append("g").attr("class", plot.name)
   );
@@ -33,9 +32,28 @@ export const drawPie = (
       );
   }
 
+  let borderColorScale: any = undefined;
+  if (plot.borderColor.key && plot.borderColor.domain) {
+    if (typeof plot.borderColor.domain[0] === "number")
+      borderColorScale = d3.scaleLinear(
+        plot.borderColor.domain as number[],
+        plot.borderColor.range as string[]
+      );
+    else
+      borderColorScale = d3.scaleOrdinal(
+        plot.borderColor.domain as string[],
+        plot.borderColor.range as string[]
+      );
+  }
+
   const getColor = (d: any) => {
     if (plot.color.key) return colorScale(d.data[plot.color.key]);
     return plot.color.fixedValue;
+  };
+
+  const getBorderColor = (d: any) => {
+    if (plot.borderColor.key) return borderColorScale(d.data[plot.borderColor.key]);
+    return plot.borderColor.fixedValue;
   };
 
   const pie = d3
@@ -60,7 +78,7 @@ export const drawPie = (
     )
     // .attr('fill', function(d){ return(color(d.data.key)) })
     .attr("fill", (d) => getColor(d))
-    .attr("stroke", "black")
+    .attr("stroke", d => getBorderColor(d))
     .style("stroke-width", "2px")
     .style("opacity", 0.7);
 

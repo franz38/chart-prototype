@@ -1,12 +1,13 @@
-import { Button, Divider, Drawer, Flex, Typography, Upload, UploadFile } from "antd"
+import { Button, Flex, Upload, UploadFile } from "antd"
 import { LevelsPanel } from "./LevelsPanel"
 import { useState } from "react"
 import { Dataset } from "../state/dto"
-import { Database, Layers, Paperclip, UploadIcon } from "lucide-react"
+import { Paperclip, UploadIcon } from "lucide-react"
 import { loadLocalDs, onFileUpload } from "../utils/data"
 import { UploadChangeParam } from "antd/es/upload"
-import { sectionHeader } from "./interfaceUtils"
-const { Text } = Typography;
+import { Section } from "../ui-elements/form/Section"
+import { SectionContainer } from "../ui-elements/form/SectionContainer"
+import { HR } from "../ui-elements/HR"
 
 
 const iconAttributes = {
@@ -45,63 +46,60 @@ export const MainPanel = (props: {
         if (ds) props.setDataset(ds)
     }
 
-    return <Drawer
-        placement="left"
-        open={props.visible}
-        styles={{ body: { padding: '0px' } }}
-        mask={false}
-        closable={false}
-        width={240}
-    >
-        <Flex justify="space-evenly" style={{ padding: "1rem .5rem 0rem .5rem" }}>
-            <Button
-                type="text"
-                onClick={() => setSectionSelected("items")}
-                icon={<Layers {...iconAttributes} />}
-                className={sectionSelected == "items" ? "mainButton" : ""}
-            >Items</Button>
-            <Button
-                type="text"
-                onClick={() => setSectionSelected("data")}
-                icon={<Database {...iconAttributes} />}
-                className={sectionSelected == "data" ? "mainButton" : ""}
-            >Data</Button>
-        </Flex>
-        <Divider style={{ margin: "1rem 0px" }} />
-        {sectionSelected == "items" && <LevelsPanel />}
-        {sectionSelected == "data" && <Flex vertical style={{ padding: "1rem .5rem" }} gap={10}>
-            <Text {...sectionHeader}>Datasets</Text>
-            {props.dataset && <Flex >
-                <Button
-                    type="text"
-                    icon={<Paperclip {...iconAttributes} />}
-                    style={{ ...buttonStyle }}
-                    onClick={() => props.datasetSelect()}
-                >{props.dataset.file.name}</Button>
-            </Flex>}
+    return <>
+        <div id="default-sidebar" className={`fixed top-12 left-0 z-40 w-60 h-screen transition-transform ${props.visible ? "" : "-translate-x-60"} bg-white shadow-2xl`} aria-label="Sidebar">
+            <div className="flex-col p-2">
+                <div className="flex flex-row justify-evenly pb-4 pt-2 border-b">
+                    <span
+                        onClick={() => setSectionSelected("items")}
+                        className={`text-sm font-medium cursor-pointer ${sectionSelected === "items" ? "underline" : ""}`}
+                    >Items</span>
+                    <span
+                        onClick={() => setSectionSelected("data")}
+                        className={`text-sm font-mediu cursor-pointer ${sectionSelected === "data" ? "underline" : ""}`}
+                    >Data</span>
+                </div>
+                {sectionSelected == "items" && <LevelsPanel />}
+                {sectionSelected == "data" && <SectionContainer>
+                    <Section label="Datasets list">
 
-            <Divider />
+                        {props.dataset && <Flex >
+                            <Button
+                                type="text"
+                                icon={<Paperclip {...iconAttributes} />}
+                                style={{ ...buttonStyle }}
+                                onClick={() => props.datasetSelect()}
+                            >{props.dataset.file.name}</Button>
+                        </Flex>}
+                    </Section>
 
-            <Button
-                style={{ ...buttonStyle }}
-                onClick={() => _loadLocalDs()}
-            >Generate ds</Button>
-            <Upload
-                name="avatar"
-                listType="picture-card"
-                className="avatar-uploader"
-                showUploadList={false}
-                onChange={onFileInputChange}
-                style={{ width: "100%" }}
-            >
-                <Flex justify="center" align="center">
-                    <UploadIcon />
-                    <button style={{ border: 0, background: 'none', paddingTop: ".2rem" }} type="button">
-                        <div style={{ marginTop: 8 }}>Upload dataset</div>
-                    </button>
-                </Flex>
-            </Upload>
-            {/* <input type="button" value={"load ds"} onClick={() => loadLocalDs()}></input> */}
-        </Flex>}
-    </Drawer>
+                    <HR></HR>
+
+                    <Section label="Add dataset">
+                        <Button
+                            style={{ ...buttonStyle }}
+                            onClick={() => _loadLocalDs()}
+                        >Generate ds</Button>
+                        <Upload
+                            name="avatar"
+                            listType="picture-card"
+                            className="avatar-uploader"
+                            showUploadList={false}
+                            onChange={onFileInputChange}
+                            style={{ width: "100%" }}
+                        >
+                            <Flex justify="center" align="center">
+                                <UploadIcon />
+                                <button style={{ border: 0, background: 'none', paddingTop: ".2rem" }} type="button">
+                                    <div style={{ marginTop: 8 }}>Upload dataset</div>
+                                </button>
+                            </Flex>
+                        </Upload>
+                    </Section>
+                </SectionContainer>
+
+                }
+            </div>
+        </div>
+    </>
 }

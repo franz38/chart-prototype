@@ -67,6 +67,7 @@ export interface PiePlot extends ISelectable {
   radius: number;
   innerradius: number;
   color: DynamicContinuous<number, string> | DynamicContinuous<string, string>;
+  borderColor: DynamicContinuous<number, string> | DynamicContinuous<string, string>;
   anglePadding: number;
   startAngle: number;
   endAngle: number;
@@ -124,6 +125,7 @@ export const newPiePlot = (circularAxis?: string): PiePlot => {
     radius: 100,
     innerradius: 20,
     color: { fixedValue: "steelblue" },
+    borderColor: {fixedValue: "#ccc"},
     anglePadding: 0,
     startAngle: 0,
     endAngle: 360,

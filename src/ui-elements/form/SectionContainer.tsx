@@ -1,0 +1,1 @@
+export const SectionContainer = (props: any) => <div className="text-left flex flex-col gap-y-4"><span></span>{props.children}</div>

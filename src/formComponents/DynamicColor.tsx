@@ -51,14 +51,11 @@ export const DynamicColor = (props: DynamicColorProps) => {
         }
         {(props.value.key && props.value.domain && props.value.range) && <>
             {typeof props.value.domain[0] === "number" &&
-                <Flex gap={10}>
-                    <ColorGradient
-                        value1={(props.value.range as string[])[0]}
-                        value2={(props.value.range as string[])[1]}
-                        onChange={function (c1: string, c2: string): void { props.onChange({ ...props.value, range: [c1, c2] }) }}
-                    />
-                    <span></span>
-                </Flex>
+                <ColorGradient
+                    value1={(props.value.range as string[])[0]}
+                    value2={(props.value.range as string[])[1]}
+                    onChange={function (c1: string, c2: string): void { props.onChange({ ...props.value, range: [c1, c2] }) }}
+                />
             }
             {typeof props.value.domain[0] === "string" &&
                 <Flex vertical style={{ width: "100%" }} gap={6}>

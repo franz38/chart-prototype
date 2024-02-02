@@ -1,8 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,400;0,500;1,500&display=swap');
 
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
 
 :root {
-  font-family: Raleway, Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -31,7 +34,7 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  font-family: "Raleway";
+  /* font-family: "Raleway"; */
 }
 
 h1 {
@@ -116,7 +119,7 @@ img.modalImg{
   width: 204px;
   border-radius: 2px;
   border: 1px solid #eee;
-  height: 30px;
+  height: 32px;
   line-height: 30px;
   
   
@@ -152,10 +155,11 @@ select{
 }
 
 .demo-box:hover > img {
-  border-color: #03a9f4;
+  border-color: #398287;
 }
 
 .demo-box:hover > span {
+  color: #398287;
   text-decoration: underline;
 }
 

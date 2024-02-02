@@ -1,4 +1,3 @@
-import { Typography, Flex, Form, Divider } from "antd";
 import { PiePlot, Plot } from "../../state/plots/dto";
 import { PlotType } from "../../state/dto";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,7 +5,6 @@ import { RootState } from "../../state/store";
 import { updatePlot } from "../../state/plots/plotsSlice";
 import { Selection } from "../../state/selected/selectedSlice"
 import { Dataset } from "../../state/dto";
-import { panelSection, sectionHeader } from "../interfaceUtils";
 import { changeAxisKey } from "../../state/aces/acesSlice";
 import { SelectInput } from "../../formComponents/SelectInput";
 import { Box, DraftingCompass, Radius, Tag } from "lucide-react";
@@ -14,8 +12,9 @@ import { inputIconProps } from "../../formComponents/styleConst";
 import { NumberInput } from "../../formComponents/NumberInput";
 import { AxisType, CircularAxis } from "../../state/aces/dto";
 import { DynamicColor } from "../../formComponents/DynamicColor";
+import { Section } from "../../ui-elements/form/Section";
+import { HR } from "../../ui-elements/HR";
 
-const { Text } = Typography;
 
 interface IAxisPanel {
     dataset: Dataset | undefined;
@@ -33,11 +32,12 @@ export const PiePlotPanel = (props: IAxisPanel) => {
     }
 
     return <>
-        <Form>
+        <div className="text-left flex flex-col gap-y-4">
 
-            <Text {...sectionHeader}>Plot type</Text>
-            <Flex {...panelSection}>
-                <SelectInput 
+            <span></span>
+
+            <Section label="Plot type">
+                <SelectInput
                     label={<Box {...inputIconProps} />}
                     options={[
                         { value: PlotType.LINE, label: "Line" },
@@ -47,11 +47,11 @@ export const PiePlotPanel = (props: IAxisPanel) => {
                     value={plot.type}
                     onChange={(val) => props.changePlotType(plot, val)}
                 />
-            </Flex>
+            </Section>
 
-            <Divider />
+            <HR />
 
-            <Text {...sectionHeader}>Axis</Text>
+            <Section label="Axis">
             <SelectInput
                 label={<Tag {...inputIconProps} />}
                 options={props.dataset?.props.map(p => ({ value: p, label: p }))}
@@ -62,11 +62,11 @@ export const PiePlotPanel = (props: IAxisPanel) => {
                     newKey: val
                 }))}
             />
+            </Section>
 
-            <Divider />
+            <HR />
 
-            <Text {...sectionHeader} >Start/end angle</Text>
-            <Flex {...panelSection}>
+            <Section label="Start/end angle">
                 <NumberInput
                     title="Start angle"
                     label={<DraftingCompass  {...inputIconProps} />}
@@ -79,12 +79,11 @@ export const PiePlotPanel = (props: IAxisPanel) => {
                     value={plot.endAngle}
                     onChange={(val) => editPlot({ ...plot, endAngle: val })}
                 />
-            </Flex>
+            </Section>
 
-            <Divider />
+            <HR />
 
-            <Text {...sectionHeader} >Radius</Text>
-            <Flex {...panelSection}>
+            <Section label="Radius">
                 <NumberInput
                     title="Inner radius"
                     label={<Radius  {...inputIconProps} />}
@@ -100,29 +99,35 @@ export const PiePlotPanel = (props: IAxisPanel) => {
                     minValue={0}
                 />
                 <NumberInput
+                    minValue={0}
                     title="Padding angle"
                     label={<Radius  {...inputIconProps} />}
                     value={plot.anglePadding}
                     onChange={(val) => editPlot({ ...plot, anglePadding: val })}
                 />
-            </Flex>
+            </Section>
 
+            <HR />
 
-            <Divider />
-
-            <Text {...sectionHeader} >Color</Text>
-            <Flex {...panelSection} vertical>
-                <DynamicColor 
+            <Section label="Color">
+                <DynamicColor
                     value={plot.color}
-                    onChange={(newColor) => editPlot({...plot, color: newColor})}
+                    onChange={(newColor) => editPlot({ ...plot, color: newColor })}
                     dataset={props.dataset}
                 />
-            </Flex>
+            </Section>
 
-            <Divider />
+            <Section label="Border color">
+                <DynamicColor
+                    value={plot.borderColor}
+                    onChange={(newColor) => editPlot({ ...plot, borderColor: newColor })}
+                    dataset={props.dataset}
+                />
+            </Section>
 
+            <HR />
 
-        </Form>
+        </div>
 
     </>
 }
