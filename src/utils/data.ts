@@ -29,7 +29,7 @@ export const loadLocalDs = async (localPath: string) => {
   const res = await d3.csv(localPath);
   const ds: Dataset = {
     file: {
-      name: "Apple Quality",
+      name: localPath.replace("./", ""),
       size: 1,
       type: "csv",
     },

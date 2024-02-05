@@ -24,9 +24,9 @@ export const ChartPanel = () => {
 
     return <>
         <div className="text-left flex flex-col gap-y-4">
-            
+
             <span></span>
-            
+
             <Section label="Layout">
                 <NumberInput
                     label="X"
@@ -63,25 +63,25 @@ export const ChartPanel = () => {
 
             <Section label="Padding">
                 <NumberInput
+                    title="Top"
                     label={"T"}
                     value={chart.padding[0]}
                     onChange={(val) => editPadding((val as number), 0)}
                 />
-            </Section>
-            <Section>
                 <NumberInput
+                    title="Right"
+                    label={"R"}
+                    value={chart.padding[1]}
+                    onChange={(val) => editPadding((val as number), 1)}
+                />
+                <NumberInput
+                    title="Left"
                     label={"L"}
                     value={chart.padding[3]}
                     onChange={(val) => editPadding((val as number), 3)}
                 />
                 <NumberInput
-                    label={"R"}
-                    value={chart.padding[1]}
-                    onChange={(val) => editPadding((val as number), 1)}
-                />
-            </Section>
-            <Section justify="center" style={{ paddingTop: ".5rem" }}>
-                <NumberInput
+                    title="Bottom"
                     label={"B"}
                     value={chart.padding[2]}
                     onChange={(val) => editPadding((val as number), 2)}

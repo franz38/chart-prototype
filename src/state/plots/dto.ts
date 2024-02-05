@@ -123,10 +123,10 @@ export const newPiePlot = (circularAxis?: string): PiePlot => {
     type: PlotType.PIE,
     circularAxis: circularAxis ?? "",
     radius: 100,
-    innerradius: 20,
+    innerradius: 30,
     color: { fixedValue: "steelblue" },
-    borderColor: {fixedValue: "#000000"},
-    anglePadding: 0,
+    borderColor: {fixedValue: "#0000009a"},
+    anglePadding: 5,
     startAngle: 0,
     endAngle: 360,
   };
