@@ -182,6 +182,8 @@ export const Canvas = (props: { plotId: string }) => {
 
     const drawChart = () => {
 
+        if (chart.hidden) return
+
         const _svg = d3.select(svgRef.current).select(`g.${props.plotId}`)
             .attr("transform", `translate(${chart.rect.x}, ${chart.rect.y})`)
             .select("g.chartBox").select("g.shapes") as any
@@ -412,7 +414,7 @@ export const Canvas = (props: { plotId: string }) => {
     }, [dataset])
 
 
-    return <>
+    return <div className="hidden md:block">
 
         <svg ref={svgRef}
             transform="translate(0 0)"
@@ -478,7 +480,7 @@ export const Canvas = (props: { plotId: string }) => {
 
         </div>
 
-
+        {/* {console.log((d3.select(svgRef.current) as any).getBoundingClientRect())} */}
 
         <SetupModal
             dataset={dataset}
@@ -488,5 +490,5 @@ export const Canvas = (props: { plotId: string }) => {
             }}
         />
 
-    </>
+    </div>
 }

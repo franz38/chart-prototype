@@ -10,6 +10,8 @@ import { addAces, changeAxisKey } from "../state/aces/acesSlice"
 import { UploadChangeParam } from "antd/es/upload"
 import { UploadIcon } from "lucide-react"
 import { setSelected } from "../state/selected/selectedSlice"
+import { resizeW, show } from "../state/chart/chartSlice"
+import * as d3 from "d3"
 
 interface SetupModalProps {
     dataset: Dataset | undefined;
@@ -24,6 +26,17 @@ export const SetupModal = (props: SetupModalProps) => {
     const [step, setStep] = useState<number>(-1)
 
     const generatePlot = (plotType: PlotType) => {
+
+        const _svg = d3.select("svg")
+        if (_svg){
+            const W = (_svg as any).node().getBoundingClientRect().width
+            const H = (_svg as any).node().getBoundingClientRect().height
+            dispatch(show({width: W, height: H}))
+        }
+        else {
+            dispatch(show({width: 0, height: 0}))
+        }
+
         switch (plotType) {
             case PlotType.SCATTER: {
                 const xAxis = newBottomAxis(props.dataset ? props.dataset.props[0] : "")
@@ -53,6 +66,7 @@ export const SetupModal = (props: SetupModalProps) => {
                 dispatch(addPlot(plot))
                 dispatch(addAces([circularAxis]))
                 dispatch(setSelected({type: "plot", key: plot.name}))
+                dispatch(resizeW(plot.radius*2))
                 break;
             }
             // case PlotType.COLUMNS: {
@@ -121,11 +135,11 @@ export const SetupModal = (props: SetupModalProps) => {
             centered
         >
             {step < 0 && <>
-                <Flex vertical align="center" gap={20}>
-                    <span className="welcomeText underline">Welcome to QuickCharts</span>
-                    <span>Select one of the examples or start from scratch!</span>
-                    <br></br>
-                    <Flex gap={20}>
+                <Flex vertical align="center">
+                    <img src="./vite.svg" className="w-[3rem]"></img>
+                    <span className="welcomeText underline mt-2">Welcome to QuickCharts</span>
+                    <span className="mt-2">Select one of the examples or start from scratch!</span>
+                    <Flex className="mt-12" gap={20}>
                         <div className="demo-box" onClick={() => setupScatter()}>
                             <img src="./plot_illustrations/ScatterPlot.png"></img>
                             <span>Scatter plot</span>

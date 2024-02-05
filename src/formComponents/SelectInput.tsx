@@ -19,7 +19,7 @@ const labelStyle: React.CSSProperties = {
 export const SelectInput = <T,>(props: SelectInputProps<T>) => {
 
     return <>
-        <label className="flex flex-row text-[13px]  min-w-[204px] w-full h-[32px] border border-[#eee] ">
+        <label className="flex flex-row text-[13px] min-w-[204px] h-[32px] border border-[#eee] ">
             <span style={labelStyle}>{props.label}</span>
             <select
                 disabled={props.readonly}

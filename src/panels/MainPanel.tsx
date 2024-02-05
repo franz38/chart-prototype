@@ -62,15 +62,14 @@ export const MainPanel = (props: {
                 {sectionSelected == "items" && <LevelsPanel />}
                 {sectionSelected == "data" && <SectionContainer>
                     <Section label="Datasets list">
-
-                        {props.dataset && <Flex >
-                            <Button
-                                type="text"
-                                icon={<Paperclip {...iconAttributes} />}
-                                style={{ ...buttonStyle }}
+                        {props.dataset && <div className="flex flex-col w-full">
+                            <div className="ds-box flex flex-row w-full h-10 border border-transparent items-center hover:border-gray-200 hover:bg-gray-100 cursor-pointer"
                                 onClick={() => props.datasetSelect()}
-                            >{props.dataset.file.name}</Button>
-                        </Flex>}
+                            >
+                                <Paperclip {...iconAttributes} className="p-[13px] h-10 w-10 ds-box-hover:bg-[blue]" />
+                                <span className="text-sm">{props.dataset.file.name}</span>
+                            </div>
+                        </div>}
                     </Section>
 
                     <HR></HR>

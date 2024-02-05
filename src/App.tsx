@@ -9,6 +9,10 @@ function App() {
       </header>
       
       <Canvas plotId='plt-1' />
+
+      <div className='block md:hidden'>
+        <p>This website is available only for desktop</p>
+      </div>
     </>
   )
 }

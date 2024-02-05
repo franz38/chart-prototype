@@ -125,7 +125,7 @@ export const newPiePlot = (circularAxis?: string): PiePlot => {
     radius: 100,
     innerradius: 20,
     color: { fixedValue: "steelblue" },
-    borderColor: {fixedValue: "#ccc"},
+    borderColor: {fixedValue: "#000000"},
     anglePadding: 0,
     startAngle: 0,
     endAngle: 360,

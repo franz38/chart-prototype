@@ -6,4 +6,5 @@ export interface Chart extends ISelectable {
   rect: Rect;
   backgroundColor: string;
   padding: number[];
+  hidden?: boolean;
 }
