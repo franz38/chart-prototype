@@ -24,16 +24,16 @@ export const drawScatter = (
   const _YScale = buildScale(yAxis, chart.rect) as any;
 
   let colorScale: any = undefined;
-  if (plot.color.key && plot.color.domain) {
+  if (plot.color.key && plot.color.domain && plot.color.range) {
     if (typeof plot.color.domain[0] === "number")
       colorScale = d3.scaleLinear(
         plot.color.domain as number[],
-        plot.color.range as string[]
+        plot.color.range
       );
     else
       colorScale = d3.scaleOrdinal(
         plot.color.domain as string[],
-        plot.color.range as string[]
+        plot.color.range
       );
   }
 
@@ -64,4 +64,46 @@ export const drawScatter = (
     .attr("fill", (d) => getColor(d));
 
   return plt;
+};
+
+export const getScatterCode = (
+  plot: ScatterPlot,
+  xAxis: LinearAxis | undefined,
+  yAxis: LinearAxis | undefined,
+  _chart: Chart
+): string => {
+  if (!xAxis || !yAxis) return "";
+
+  let sizeScaleString = undefined;
+  let colorScaleString = undefined;
+  if (plot.size.key)
+    sizeScaleString = `const sizeScale = d3.scaleLinear().domain([${plot.size.domain}]).range([${plot.size.range}])\n`;
+  if (plot.color.key && plot.color.domain && plot.color.range) {
+    if (typeof plot.color.domain[0] === "number")
+      colorScaleString = `const colorScale = d3.scaleLinear(
+        [${plot.color.domain as number[]}],
+        [${plot.color.range.map((v) => `"${v}"`)}]
+      );`;
+    else
+      colorScaleString = `const colorScale = d3.scaleOrdinal(
+        [${plot.color.domain.map((v) => `"${v}"`)}]
+        [${plot.color.range.map((v) => `"${v}"`)}]
+      );`;
+  }
+  return `
+${sizeScaleString ?? ""}${colorScaleString ?? ""}
+
+plt
+  .selectAll("circle")
+  .data(data.values)
+  .join("circle")
+  .attr("cx", (d) => xScale(d["${xAxis.key}"]))
+  .attr("cy", (d) => yScale(d["${yAxis.key}"]))
+  .attr("r", ${
+    sizeScaleString ? "(d) => sizeScale(d)" : `${plot.size.fixedValue}`
+  })
+  .attr("fill", ${
+    colorScaleString ? "(d) => colorScale(d)" : `"${plot.color.fixedValue}"`
+  });
+`;
 };

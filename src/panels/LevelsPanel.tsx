@@ -1,23 +1,16 @@
-import React from "react";
-import { Button } from "antd";
+import { useState } from "react";
 import { Plot } from "../state/plots/dto";
 import { PlotType } from "../state/dto";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../state/store";
 import { setSelected } from "../state/selected/selectedSlice";
-import { Move3D, Box, ScatterChart, LineChart, BarChart, PieChart, HelpCircle } from "lucide-react"
+import { Move3D, Box, ScatterChart, LineChart, PieChart, HelpCircle, BarChart3, MoreVertical, Clipboard, Image } from "lucide-react"
 import { AxisType } from "../state/aces/dto";
+import { LayerButton } from "../ui-elements/LayerButton";
 
 const iconAttributes = {
     size: 14,
     color: "rgba(0, 0, 0, 0.88)",
-}
-
-const buttonStyle: React.CSSProperties = {
-    width: "100%",
-    textAlign: "start",
-    borderRadius: 0,
-    height: "2.5rem"
 }
 
 const getPlotIcon = (plot: Plot) => {
@@ -26,51 +19,96 @@ const getPlotIcon = (plot: Plot) => {
             return <ScatterChart {...iconAttributes} />
         case PlotType.LINE:
             return <LineChart {...iconAttributes} />
-        case PlotType.COLUMNS:
-            return <BarChart {...iconAttributes} />
         case PlotType.PIE:
             return <PieChart {...iconAttributes} />
+        case PlotType.BAR:
+            return <BarChart3 {...iconAttributes} />
         default:
             return <HelpCircle {...iconAttributes} />
     }
 }
 
-export const LevelsPanel = () => {
+export const LevelsPanel = (props: { onExport: () => void, onGetCode: () => void, minified: boolean }) => {
 
     const dispatch = useDispatch()
     const plots = useSelector((state: RootState) => state.plots)
     const selected = useSelector((state: RootState) => state.selection.selection)
     const aces = useSelector((state: RootState) => state.aces)
 
+    const [subMenu, setSubMenu] = useState<boolean>(false)
 
-    return <div className="flex flex-col pt-2">
-        <Button
-            type="text"
-            icon={<Box {...iconAttributes} />}
-            style={{ ...buttonStyle, backgroundColor: (selected && selected.type === "chart") ? "#eee" : "" }}
-            onClick={() => dispatch(setSelected({ type: "chart", key: "chart.name" }))}
+
+    return <div className="flex flex-col pt-2 select-none gap-1">
+
+        {!props.minified && <div
+            className={`${selected && selected.type === "chart" ? "bg-[#eee]" : ""} w-full flex flex-row justify-between px-4 py-2 h-[40px] items-center hover:bg-[#eee] cursor-pointer rounded-sm`}
+            onClick={(_e) => {
+                dispatch(setSelected({ type: "chart", key: "chart.name" }))
+            }}
         >
-            Chart
-        </Button>
+            <div className="flex items-center">
+                <Box {...iconAttributes} className="me-2" />
+                <span className="text-sm">Chart</span>
+            </div>
+            {false && <MoreVertical
+                {...iconAttributes}
+                className="h-[30px] w-[30px] p-[7px] border border-[transparent] hover:border-[#ccc]"
+                onClick={(e) => { e.stopPropagation(); setSubMenu(!subMenu) }}
+            />}
+
+            <div
+                className={`${subMenu ? "" : "hidden"} absolute left-full bg-white ms-2 p-1 w-[160px]`}
+                onMouseLeave={() => setSubMenu(false)}
+            >
+                <div className="flex flex-row justify-start items-center px-4 py-2 h-[40px] w-full hover:bg-[#eee] cursor-pointer rounded-sm"
+                    onClick={(e) => { e.stopPropagation(); props.onGetCode() }}
+                >
+                    <Clipboard {...iconAttributes} className="me-2" />
+                    <span className="text-sm">Copy code</span>
+                </div>
+                <div className="flex flex-row justify-start items-center px-4 py-2 h-[40px] w-full hover:bg-[#eee] cursor-pointer rounded-sm"
+                    onClick={(e) => { e.stopPropagation(); props.onExport() }}
+                >
+                    <Image {...iconAttributes} className="me-2" />
+                    <span className="text-sm">Export svg</span>
+                </div>
+            </div>
+
+        </div>}
+
+        {props.minified && <LayerButton 
+            label="Chart"
+            icon={<Box {...iconAttributes} />}
+            onClick={() => dispatch(setSelected({ type: "chart", key: "chart.name" }))}
+            selected={selected && selected.type === "chart"}
+            padding={0}
+            minified={props.minified}
+        />}
+
         {
             plots.map(plot =>
-                <Button
+                <LayerButton
                     key={plot.type}
-                    type="text"
+                    label={plot.label ?? plot.name}
                     icon={getPlotIcon(plot)}
-                    style={{ ...buttonStyle, paddingLeft: "2rem", backgroundColor: (selected && plot.name === selected.key) ? "#eee" : "" }}
                     onClick={() => dispatch(setSelected({ type: "plot", key: plot.name }))}
-                >{plot.name}</Button>)
+                    selected={selected && plot.name === selected.key}
+                    padding={1}
+                    minified={props.minified}
+                />
+            )
         }
         {
             aces.filter(ax => ax.type === AxisType.Linear).map(axis =>
-                <Button
+                <LayerButton
                     key={axis.id}
-                    type="text"
+                    label={axis.id}
                     icon={<Move3D {...iconAttributes} />}
-                    style={{ ...buttonStyle, paddingLeft: "2rem", backgroundColor: (selected && axis.id == selected.key) ? "#eee" : "" }}
                     onClick={() => dispatch(setSelected({ type: "axis", key: axis.id }))}
-                >{axis.id}</Button>)
+                    selected={selected && axis.id == selected.key}
+                    padding={1}
+                    minified={props.minified}
+                />)
         }
     </div>
 

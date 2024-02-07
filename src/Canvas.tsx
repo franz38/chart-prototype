@@ -2,32 +2,34 @@ import * as d3 from "d3";
 import { useEffect, useRef, useState } from "react";
 import { isVertical } from "./utils/axis";
 import { d3ExistOrAppend } from "./utils/d3";
-import { _drawAxis } from "./draw/drawAxis";
+import { _drawAxis, getAxisCode } from "./draw/drawAxis";
 import { AxisPanel } from "./panels/axis/AxisPanel";
-import { Axis, AxisType, CircularAxis, newBottomAxis, newCircularAxis, newLeftAxis, newRadarAxis } from "./state/aces/dto";
+import { Axis, AxisType, CircularAxis, newBottomAxis, newCircularAxis, newLeftAxis } from "./state/aces/dto";
 import { LinearAxis } from "./state/aces/dto";
-import { LinePlot, PiePlot, Plot, ScatterPlot, SpiderPlot, newColumnsPlot, newLinePlot, newPiePlot, newScatterPlot, newSpiderPlot } from "./state/plots/dto";
+import { BarPlot, LinePlot, PiePlot, Plot, ScatterPlot, newBarPlot, newLinePlot, newPiePlot, newScatterPlot } from "./state/plots/dto";
 import { PlotType } from "./state/dto";
-import { drawScatter } from "./draw/drawScatter";
+import { drawScatter, getScatterCode } from "./draw/drawScatter";
 import { ChartPanel } from "./panels/ChartPanel";
 import { getColumn } from "./utils/data";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "./state/store";
 import { setSelected } from "./state/selected/selectedSlice";
-import { addAces, changeAxisKey, changeRadarAxisKey, setAces } from "./state/aces/acesSlice";
+import { addAces, changeAxisKey, setAces } from "./state/aces/acesSlice";
 import { drawChartSelection, drawSelection2 } from "./draw/drawSelector";
 import { Dataset, Rect } from "./state/dto";
 import { drag, handle1 } from "./state/chart/chartSlice";
 import { addPlot, removePlot, replacePlot } from "./state/plots/plotsSlice";
 import { MainPanel } from "./panels/MainPanel";
 import { DatasetModal } from "./panels/DatasetModal";
-import { drawPie } from "./draw/drawPie";
+import { drawPie, getPieCode } from "./draw/drawPie";
 import { SetupModal } from "./panels/SetupModal";
 import { ScatterPlotPanel } from "./panels/Plot/ScatterPlotPanel";
 import { PiePlotPanel } from "./panels/Plot/PiePlotPanel";
 import { LinePlotPanel } from "./panels/Plot/LinePlotPanel";
-import { drawLine } from "./draw/drawLine";
-import { drawSpider } from "./draw/drawSpider";
+import { drawLine, getLineCode } from "./draw/drawLine";
+import { drawBar } from "./draw/drawBar";
+import { BarPlotPanel } from "./panels/Plot/BarPlotPanel";
+import { exportSvg } from "./utils/export-svg";
 
 
 /**
@@ -50,7 +52,6 @@ export const Canvas = (props: { plotId: string }) => {
     const plots = useSelector((state: RootState) => state.plots)
     const [dataset, setDataset] = useState<Dataset>();
     const [dataModalOpen, setDataModalOpen] = useState<boolean>(false)
-    const [mainPanelOpen, setMainPanelOpen] = useState<boolean>(false)
 
     const getAxis = (id: string | undefined): Axis | undefined => {
         if (!id) return undefined
@@ -89,7 +90,6 @@ export const Canvas = (props: { plotId: string }) => {
             .attr("class", "p1")
             .call((d3.drag() as any)
                 .on("drag", (e: any) => {
-                    console.log(e)
                     dispatch(handle1({ dx: (e.x - e.subject.x), dy: (e.y - e.subject.y) }))
                 })
             )
@@ -252,8 +252,8 @@ export const Canvas = (props: { plotId: string }) => {
             dispatch(removePlot(plot))
             switch (newType) {
                 case PlotType.SCATTER: {
-                    const xAxis = newBottomAxis(dataset ? dataset.props[0] : "")
-                    const yAxis = newLeftAxis(dataset ? dataset.props[1] : "")
+                    const xAxis = newBottomAxis(dataset ? dataset.props[0].key : "")
+                    const yAxis = newLeftAxis(dataset ? dataset.props[1].key : "")
                     const plot = newScatterPlot(xAxis.id, yAxis.id)
                     dispatch(addPlot(plot))
                     dispatch(addAces([xAxis, yAxis]))
@@ -262,8 +262,8 @@ export const Canvas = (props: { plotId: string }) => {
                     break;
                 }
                 case PlotType.LINE: {
-                    const xAxis = newBottomAxis(dataset ? dataset.props[0] : "")
-                    const yAxis = newLeftAxis(dataset ? dataset.props[1] : "")
+                    const xAxis = newBottomAxis(dataset ? dataset.props[0].key : "")
+                    const yAxis = newLeftAxis(dataset ? dataset.props[1].key : "")
                     const plot = newLinePlot(xAxis.id, yAxis.id)
                     dispatch(addPlot(plot))
                     dispatch(addAces([xAxis, yAxis]))
@@ -271,29 +271,21 @@ export const Canvas = (props: { plotId: string }) => {
                     dispatch(changeAxisKey({ axis: yAxis, dataset: dataset, newKey: yAxis.key }))
                     break;
                 }
-                case PlotType.COLUMNS: {
-                    const xAxis = newBottomAxis(dataset ? dataset.props[0] : "")
-                    const yAxis = newLeftAxis(dataset ? dataset.props[1] : "")
-                    const plot = newColumnsPlot(xAxis.id, yAxis.id)
+                case PlotType.BAR: {
+                    const xAxis = newBottomAxis(dataset ? dataset.props.find(p => p.type === "discrete")?.key : "")
+                    const yAxis = newLeftAxis(dataset ? dataset.props.find(p => p.type !== "discrete")?.key : "")
+                    const plot = newBarPlot(xAxis.id, yAxis.id)
                     dispatch(addPlot(plot))
                     dispatch(addAces([xAxis, yAxis]))
                     dispatch(changeAxisKey({ axis: xAxis, dataset: dataset, newKey: xAxis.key }))
                     dispatch(changeAxisKey({ axis: yAxis, dataset: dataset, newKey: yAxis.key }))
-                    break;
+                    break
                 }
                 case PlotType.PIE: {
-                    const circularAxis = newCircularAxis(dataset ? dataset.props[0] : "")
+                    const circularAxis = newCircularAxis(dataset ? dataset.props.find(p => p.type === "continous")?.key : "")
                     const plot = newPiePlot(circularAxis.id)
                     dispatch(addPlot(plot))
                     dispatch(addAces([circularAxis]))
-                    break;
-                }
-                case PlotType.SPIDER: {
-                    const aces = dataset ? dataset.props.map(prop => newRadarAxis(prop)) : []
-                    const plot = newSpiderPlot(aces.map(ax => ax.id))
-                    dispatch(addPlot(plot))
-                    dispatch(addAces(aces))
-                    aces.forEach(ax => dispatch(changeRadarAxisKey({ axis: ax, dataset: dataset, newKey: ax.key })))
                     break;
                 }
                 default:
@@ -321,22 +313,15 @@ export const Canvas = (props: { plotId: string }) => {
                 plt = drawLine(_svg, _plot, data, getAxis(_plot.xAxis) as LinearAxis, getAxis(_plot.yAxis) as LinearAxis, chart)
                 break;
             }
-            // case PlotType.COLUMNS:
-            //     plt = drawScatter(_svg, plot, data, getAxis(plot.xAxis) as LinearAxis, getAxis(plot.yAxis) as LinearAxis, chart)
-            //     break;
+            case PlotType.BAR:
+                const _plot = plot as BarPlot
+                plt = drawBar(_svg, _plot, data, getAxis(_plot.xAxis) as LinearAxis, getAxis(_plot.yAxis) as LinearAxis, chart)
+                break;
             case PlotType.PIE: {
                 const _plot = plot as PiePlot
                 plt = drawPie(_svg, _plot, data, chart, getAxis(_plot.circularAxis) as CircularAxis)
                 break;
             }
-            case PlotType.SPIDER: {
-                const _plot = plot as SpiderPlot
-                plt = drawSpider(_svg, _plot, data, _plot.aces.map(ax => getAxis(ax) as LinearAxis), chart)
-                break;
-            }
-            // case PlotType.CIRCULAR_BAR:
-            //     plt = drawCircularBar(_svg, plot, data, xAxis, yAxis, chart)
-            //     break;
             default:
                 break;
         }
@@ -348,6 +333,53 @@ export const Canvas = (props: { plotId: string }) => {
 
         }
 
+    }
+
+    const savePlot = () => {
+        // const _svg = d3.select(svgRef.current)
+        const _svg = document.getElementById("svg")
+        if (_svg) exportSvg(_svg)
+    }
+
+    const getCode = () => {
+
+        if (!plots[0]) return
+
+        const acesCode = aces.map(ax => getAxisCode(ax, chart)).join("\n")
+        
+        let plotCode = ""
+        switch (plots[0].type) {
+            case PlotType.SCATTER:
+                plotCode = getScatterCode(
+                    plots[0] as ScatterPlot,
+                    aces[0] as LinearAxis, 
+                    aces[1] as LinearAxis, 
+                    chart)
+                break;
+            case PlotType.LINE:
+                plotCode = getLineCode(
+                    plots[0] as LinePlot,
+                    aces[0] as LinearAxis, 
+                    aces[1] as LinearAxis, 
+                    chart)
+                break;
+            case PlotType.PIE:                
+                plotCode = getPieCode(
+                    plots[0] as PiePlot,
+                    aces[0] as CircularAxis, 
+                    chart)
+                break;
+            default:
+                break;
+        }
+
+        const code = `
+${acesCode}
+${plotCode}
+        `
+        // console.log(code);
+        // setCodeExport(code)
+        navigator.clipboard.writeText(code)
     }
 
     useEffect(() => {
@@ -388,27 +420,32 @@ export const Canvas = (props: { plotId: string }) => {
 
     useEffect(() => {
         if (dataset) {
-            if (aces.some(ax => ax.type === AxisType.Linear)) {
-                dispatch(setAces([...aces.filter(ax => ax.type === AxisType.Linear).map(ax => ax as LinearAxis).map((ax, id) => {
-                    const key = dataset.props[id]
-                    const data = getColumn(dataset, key)
-                    let domain: number[] = [Math.min(...data), Math.max(...data)]
-                    const newAx: LinearAxis = {
-                        ...ax,
-                        key: key,
-                        scale: { ...ax.scale, props: { ...ax.scale.props, domain: domain } }
-                    }
-                    return newAx
-                })]))
+            if (plots[0] && plots[0].type != PlotType.BAR) {
+                if (aces.some(ax => ax.type === AxisType.Linear)) {
+                    dispatch(setAces([...aces.filter(ax => ax.type === AxisType.Linear).map(ax => ax as LinearAxis).map((ax, id) => {
+                        const key = dataset.props[id].key
+                        const data = getColumn(dataset, key)
+                        let domain: number[] = [Math.min(...data), Math.max(...data)]
+                        const newAx: LinearAxis = {
+                            ...ax,
+                            key: key,
+                            scale: { ...ax.scale, props: { ...ax.scale.props, domain: domain } }
+                        }
+                        return newAx
+                    })]))
+                }
+                else {
+                    dispatch(setAces([...aces.filter(ax => ax.type === AxisType.Circular).map(ax => ax as CircularAxis).map(ax => {
+                        const newAx: CircularAxis = {
+                            ...ax,
+                            key: dataset.props[0].key
+                        }
+                        return newAx
+                    })]))
+                }
             }
-            else {
-                dispatch(setAces([...aces.filter(ax => ax.type === AxisType.Circular).map(ax => ax as CircularAxis).map(ax => {
-                    const newAx: CircularAxis = {
-                        ...ax,
-                        key: dataset.props[0]
-                    }
-                    return newAx
-                })]))
+            else if (plots[0] && plots[0].type == PlotType.BAR) {
+                dispatch(setAces([...aces]))
             }
         }
     }, [dataset])
@@ -416,32 +453,28 @@ export const Canvas = (props: { plotId: string }) => {
 
     return <div className="hidden md:block">
 
-        <svg ref={svgRef}
-            transform="translate(0 0)"
-            onContextMenu={e => e.preventDefault()}
-            style={{ height: "100vh", width: "calc(100vw)" }}
-        >
-            <defs>
-                <pattern id="dottedPattern" width="50" height="50" patternUnits="userSpaceOnUse">
-                    <circle cx="5" cy="5" r="2" fill="#eee" />
-                </pattern>
-            </defs>
-            <rect width='800%' height='800%' transform='translate(0,0)' fill='url(#dottedPattern)' />
-        </svg>
-
-        {/* <svg id='patternId' width='100%' height='100%' xmlns='http://www.w3.org/2000/svg'>
-            <defs><pattern id='a' patternUnits='userSpaceOnUse' width='40' height='40' patternTransform='scale(2) rotate(0)'>
-                <rect x='0' y='0' width='100%' height='100%' fill='hsla(0,0%,100%,1)' />
-                <path d='M11 6a5 5 0 01-5 5 5 5 0 01-5-5 5 5 0 015-5 5 5 0 015 5' stroke-width='1' stroke='none' fill='hsla(258.5,59.4%,59.4%,1)' /></pattern>
-            </defs>
-            <rect width='800%' height='800%' transform='translate(0,0)' fill='url(#a)' />
-        </svg> */}
+        <div className="svg-container">
+            <svg ref={svgRef}
+                id={"svg"}
+                transform="translate(0 0)"
+                onContextMenu={e => e.preventDefault()}
+                style={{ height: "100vh", width: "calc(100vw)" }}
+            >
+                <defs>
+                    <pattern id="dottedPattern" width="50" height="50" patternUnits="userSpaceOnUse">
+                        <circle cx="5" cy="5" r="2" fill="#eee" />
+                    </pattern>
+                </defs>
+                <rect width='800%' height='800%' transform='translate(0,0)' fill='url(#dottedPattern)' />
+            </svg>
+        </div>
 
         <MainPanel
-            visible={mainPanelOpen}
-            dataset={dataset}
+            datasets={dataset ? [dataset] : []}
             setDataset={ds => setDataset(ds)}
             datasetSelect={() => { dispatch(setSelected(undefined)); setDataModalOpen(true) }}
+            onExport={savePlot} 
+            onGetCode={getCode}
         />
 
         <DatasetModal
@@ -450,8 +483,8 @@ export const Canvas = (props: { plotId: string }) => {
             dataset={dataset}
         />
 
-        <div id="default-sidebar" className={`overflow-y-scroll fixed top-0 pt-14 px-2 pb-6 right-0 z-40 w-60 h-screen transition-transform  ${!!selection ? "" : "translate-x-60"}  bg-white shadow-2xl `} aria-label="Sidebar">
-            
+        <div id="default-sidebar" className={`overflow-y-scroll fixed top-0 pt-14 px-2 pb-6 right-0 z-40 w-[240px] h-screen transition-transform  ${!!selection ? "" : "translate-x-60"}  bg-white shadow-2xl `} aria-label="Sidebar">
+
             {selection?.type === "axis" && <AxisPanel dataset={dataset} />}
 
             {(selection?.type === "plot" && plots[0] !== undefined) && <>
@@ -468,6 +501,12 @@ export const Canvas = (props: { plotId: string }) => {
                         changePlotType={onPlotTypeChange}
                     />}
 
+                {plots[0].type === PlotType.BAR &&
+                    <BarPlotPanel
+                        dataset={dataset}
+                        changePlotType={onPlotTypeChange}
+                    />}
+
                 {plots[0].type === PlotType.PIE &&
                     <PiePlotPanel
                         dataset={dataset}
@@ -476,7 +515,7 @@ export const Canvas = (props: { plotId: string }) => {
 
             </>}
 
-            {selection?.type === "chart" && <ChartPanel />}
+            {selection?.type === "chart" && <ChartPanel onExport={savePlot} onGetCode={getCode} />}
 
         </div>
 
@@ -485,9 +524,6 @@ export const Canvas = (props: { plotId: string }) => {
         <SetupModal
             dataset={dataset}
             setDataset={ds => setDataset(ds)}
-            onSetupEnd={() => {
-                setMainPanelOpen(true)
-            }}
         />
 
     </div>

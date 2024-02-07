@@ -1,13 +1,3 @@
-
-const labelStyle: React.CSSProperties = {
-    display: "block",
-    lineHeight: "30px",
-    width: "30px",
-    textAlign: "center",
-    fontSize: "12px",
-    userSelect: "none",
-}
-
 interface CheckInputProps {
     label?: string | React.ReactNode;
     value: boolean;
@@ -17,10 +7,10 @@ interface CheckInputProps {
 export const CheckInput = (props: CheckInputProps) => {
 
     return <label
-        style={{ display: "flex", width: "96px", borderRadius: "2px", border: "1px solid #eee" }}
+        className="flex h-[30px] w-[96px] items-center rounded-sm border border-[#eee] cursor-pointer"
     >
         {props.label && <span
-            style={labelStyle}
+            className="flex justify-center items-center w-[30px] h-[30px]"
         >{props.label}</span>}
         <input type="checkbox" checked={props.value} onChange={() => props.onChange(!props.value)}></input>
     </label>

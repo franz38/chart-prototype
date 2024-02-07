@@ -33,7 +33,7 @@ export const loadLocalDs = async (localPath: string) => {
       size: 1,
       type: "csv",
     },
-    props: [...Object.keys(res[0])],
+    props: Object.keys(res[0]).map(k => ({key: k, type: isNaN(res[0][k] as any) ? "discrete" : "continous"})),
     values: [
       ...res.map((v) => {
         return v;
@@ -50,7 +50,7 @@ export const onFileUpload = async (file: File | undefined) => {
       const data = fileContent.split("\n");
       const header = data[0];
       const csv_props = header.split(",");
-      const values = [];
+      const values: {[prop: string]: any}[] = [];
 
       for (let i = 1; i < data.length - 1; i++) {
         let row = data[i].split(",").reduce((acc, current, id) => {
@@ -67,7 +67,7 @@ export const onFileUpload = async (file: File | undefined) => {
           size: file.size,
           type: file.type
          },
-        props: csv_props,
+        props: csv_props.map((k, _i) => ({key: k, type: isNaN(values[0][k] as any) ? "discrete" : "continous"})),
         values: values,
       };
 

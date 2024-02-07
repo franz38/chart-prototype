@@ -10,16 +10,6 @@ interface NumberInputProps {
     maxValue?: number;
 }
 
-const labelStyle: React.CSSProperties = {
-    display: "block",
-    lineHeight: "30px",
-    width: "30px",
-    textAlign: "center",
-    fontSize: "12px",
-    userSelect: "none",
-    cursor: "ew-resize"
-}
-
 export const NumberInput = (props: NumberInputProps) => {
 
     const [startDragPos, setStartDragPos] = useState<number | undefined>()
@@ -29,23 +19,35 @@ export const NumberInput = (props: NumberInputProps) => {
         if (
             (props.minValue == undefined || v >= props.minValue) &&
             (props.maxValue == undefined || v <= props.maxValue)
-        ) props.onChange(v)
+        ) {
+            props.onChange(v)
+            console.log(v);
+            
+        }
     }
 
     return <>
         <label
             title={props.title}
-            style={{ display: "flex", width: "96px", borderRadius: "2px", border: "1px solid #eee", height: "30px" }}
+            className="flex h-[30px] w-[96px] items-center rounded-sm border border-[#eee]"
             onMouseMove={(e) => {
                 if (startDragPos) {
                     setTempValue((tempValue ?? props.value) + e.movementX);
                     onChange(tempValue ?? props.value)
                 }
             }}
-            onMouseUp={() => { setStartDragPos(undefined); onChange(tempValue ?? props.value); setTempValue(undefined) }}
-            onMouseLeave={() => { setStartDragPos(undefined); onChange(tempValue ?? props.value); setTempValue(undefined) }}
+            onMouseUp={() => { 
+                if (startDragPos) {
+                    setStartDragPos(undefined); onChange(tempValue ?? props.value); setTempValue(undefined) 
+                }}}
+            onMouseLeave={() => { 
+                if (startDragPos){
+                    setStartDragPos(undefined); onChange(tempValue ?? props.value); setTempValue(undefined)
+                }
+             }}
         >
-            {props.label && <span style={labelStyle}
+            {props.label && <span
+                className="flex justify-center items-center w-[30px] h-[30px] cursor-ew-resize"
                 onMouseDown={(e) => { setStartDragPos(e.clientX) }}
             >{props.label}</span>}
             <input

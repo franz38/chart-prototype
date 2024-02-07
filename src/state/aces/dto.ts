@@ -45,6 +45,7 @@ export interface AxisStyle {
   fontColor: string;
   fontSize: number;
   tickTextVisible: boolean;
+  textAngle: number;
 }
 
 export interface LinearAxis extends ISelectable {
@@ -86,6 +87,7 @@ const defaultStyle: AxisStyle = {
   lineVisible: true,
   tickTextVisible: true,
   tickVisible: true,
+  textAngle: 0
 };
 
 const defaultScale: Scale = {
