@@ -1,4 +1,3 @@
-import { Flex } from "antd"
 import { AlignCenterVertical, AlignEndVertical, AlignStartVertical } from "lucide-react"
 
 const style: React.CSSProperties = {
@@ -13,9 +12,9 @@ const iconAttributes = {
 
 export const AlignInput = () => {
 
-    return <Flex justify="space-between" align="center" style={{ display: "flex", width: "96px", height: "32px", borderRadius: "2px", border: "1px solid #eee" }}>
+    return <div style={{ display: "flex", width: "96px", height: "32px", borderRadius: "2px", border: "1px solid #eee" }}>
         <AlignStartVertical {...iconAttributes} />
         <AlignCenterVertical {...iconAttributes} />
         <AlignEndVertical {...iconAttributes} />
-    </Flex>
+    </div>
 }

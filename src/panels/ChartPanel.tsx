@@ -11,7 +11,7 @@ import { Section } from "../ui-elements/form/Section";
 import { HR } from "../ui-elements/HR";
 
 
-export const ChartPanel = () => {
+export const ChartPanel = (props: { onExport: () => void, onGetCode: () => void }) => {
 
     const dispatch = useDispatch()
     const chart = useSelector((state: RootState) => state.chart)
@@ -29,22 +29,22 @@ export const ChartPanel = () => {
 
             <Section label="Layout">
                 <NumberInput
-                    label="X"
+                    label={<span className="text-xs">X</span>}
                     value={chart.rect.x}
                     onChange={(val) => dispatch(moveX(val))}
                 />
                 <NumberInput
-                    label="Y"
+                    label={<span className="text-xs">Y</span>}
                     value={chart.rect.y}
                     onChange={(val) => dispatch(moveY(val))}
                 />
                 <NumberInput
-                    label="W"
+                    label={<span className="text-xs">W</span>}
                     value={chart.rect.w}
                     onChange={(val) => dispatch(resizeW(val))}
                 />
                 <NumberInput
-                    label="H"
+                    label={<span className="text-xs">H</span>}
                     value={chart.rect.h}
                     onChange={(val) => dispatch(resizeH(val))}
                 />
@@ -64,25 +64,25 @@ export const ChartPanel = () => {
             <Section label="Padding">
                 <NumberInput
                     title="Top"
-                    label={"T"}
+                    label={<span className="text-xs">T</span>}
                     value={chart.padding[0]}
                     onChange={(val) => editPadding((val as number), 0)}
                 />
                 <NumberInput
                     title="Right"
-                    label={"R"}
+                    label={<span className="text-xs">R</span>}
                     value={chart.padding[1]}
                     onChange={(val) => editPadding((val as number), 1)}
                 />
                 <NumberInput
                     title="Left"
-                    label={"L"}
+                    label={<span className="text-xs">L</span>}
                     value={chart.padding[3]}
                     onChange={(val) => editPadding((val as number), 3)}
                 />
                 <NumberInput
                     title="Bottom"
-                    label={"B"}
+                    label={<span className="text-xs">B</span>}
                     value={chart.padding[2]}
                     onChange={(val) => editPadding((val as number), 2)}
                 />
@@ -93,7 +93,7 @@ export const ChartPanel = () => {
             {(plot && (plot.type === PlotType.SCATTER || plot.type === PlotType.LINE)) && <>
                 <Section label="Show grid">
                     <CheckInput
-                        label={"X"}
+                        label={<span className="text-xs">X</span>}
                         value={(aces.find(ax => (ax as LinearAxis).position == AxisPosition.BOTTOM) as LinearAxis)?.showGrid ?? false}
                         onChange={v => {
                             const ax = aces.find(ax => (ax as LinearAxis).position == AxisPosition.BOTTOM)
@@ -102,7 +102,7 @@ export const ChartPanel = () => {
                         }}
                     />
                     <CheckInput
-                        label={"Y"}
+                        label={<span className="text-xs">Y</span>}
                         value={(aces.find(ax => (ax as LinearAxis).position == AxisPosition.LEFT) as LinearAxis)?.showGrid ?? false}
                         onChange={v => {
                             const ax = aces.find(ax => (ax as LinearAxis).position == AxisPosition.LEFT)
@@ -112,6 +112,13 @@ export const ChartPanel = () => {
                     />
                 </Section>
             </>}
+
+            {false && <HR />}
+
+            {false && <Section label="Export">
+                <button onClick={() => props.onExport()}>get svg</button>
+                <button onClick={() => props.onGetCode()}>get code</button>
+            </Section>}
 
         </div>
     </>

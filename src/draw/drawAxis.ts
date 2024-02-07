@@ -6,7 +6,7 @@ import {
   LinearAxis,
 } from "../state/aces/dto";
 import { Rect } from "../state/dto";
-import { buildScale } from "../utils/d3";
+import { buildScale, getScaleCode } from "../utils/d3";
 import { isVertical } from "../utils/axis";
 import { Chart } from "../state/chart/dto";
 
@@ -107,7 +107,40 @@ export const renderAxis = (
 
   ticks
     .select("text")
+    .attr("style", () => {
+      if (axis.style.textAngle <= -45)
+        return `text-anchor: end; transform: rotate(${axis.style.textAngle}deg); transform-origin: right`
+      else
+        return `transform: translateY(${Math.sin(-axis.style.textAngle*Math.PI/180)*100}%) rotate(${axis.style.textAngle}deg); transform-origin: center`
+    })
     .attr("fill", style.fontColor)
     .attr("font-size", style.fontSize)
-    .attr("display", style.tickTextVisible ? "initial" : "none");
+    .attr("display", style.tickTextVisible ? "initial" : "none")
 };
+
+export const getAxisCode = (
+  _axis: Axis,
+  chart: Chart,
+): string => {
+
+  if (_axis.type !== AxisType.Linear) return ""
+  const axis = _axis as LinearAxis
+  switch (axis.position) {
+    case AxisPosition.BOTTOM:
+      return `
+const xScale = ${getScaleCode(axis, chart.rect)}
+container
+  .call(d3.axisBottom(xScale))
+  .attr("transform", "translate(0 ${chart.rect.h + axis.margin})");`  
+    default:
+    case AxisPosition.LEFT:
+      return `
+const yScale = ${getScaleCode(axis, chart.rect)}
+container
+  .call(d3.axisBottom(yScale))
+  .attr("transform", "translate(${-axis.margin} 0)");`  
+      
+      break;
+  }
+  return ""
+}

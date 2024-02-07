@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { LinePlot, Plot } from "../../state/plots/dto";
+import { BarPlot, Plot } from "../../state/plots/dto";
 import { PlotType } from "../../state/dto";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../state/store";
@@ -9,13 +9,14 @@ import { Dataset } from "../../state/dto";
 import { isVertical } from "../../utils/axis";
 import { changeAxisKey } from "../../state/aces/acesSlice";
 import { SelectInput } from "../../formComponents/SelectInput";
-import { Move3D, Ruler, Tag } from "lucide-react";
+import { AlignHorizontalSpaceAround, Move3D, Ruler, Tag } from "lucide-react";
 import { inputIconProps } from "../../formComponents/styleConst";
 import { ColorInput } from "../../formComponents/ColorInput";
 import { NumberInput } from "../../formComponents/NumberInput";
 import { AxisType, LinearAxis } from "../../state/aces/dto";
 import { Section } from "../../ui-elements/form/Section";
 import { HR } from "../../ui-elements/HR";
+import { DynamicColor } from "../../formComponents/DynamicColor";
 import { DatasetSelector, PlotTypeSelector } from "./components";
 
 
@@ -24,10 +25,10 @@ interface IAxisPanel {
     changePlotType: (plot: Plot, newType: PlotType) => void;
 }
 
-export const LinePlotPanel = (props: IAxisPanel) => {
+export const BarPlotPanel = (props: IAxisPanel) => {
 
     const dispatch = useDispatch()
-    const plot = useSelector((state: RootState) => state.plots.find(plt => plt.name === (state.selection.selection as Selection).key)) as LinePlot
+    const plot = useSelector((state: RootState) => state.plots.find(plt => plt.name === (state.selection.selection as Selection).key)) as BarPlot
     const aces = useSelector((state: RootState) => state.aces).filter(ax => ax.type === AxisType.Linear) as LinearAxis[]
 
     const updateKeyProps = (newKey: string, yorx: "x" | "y") => {
@@ -47,7 +48,7 @@ export const LinePlotPanel = (props: IAxisPanel) => {
         }
     }
 
-    const editPlot = (plt: LinePlot) => {
+    const editPlot = (plt: BarPlot) => {
         dispatch(updatePlot(plt))
     }
 
@@ -125,23 +126,30 @@ export const LinePlotPanel = (props: IAxisPanel) => {
 
             <HR />
 
-            <Section label="Line color">
-                <ColorInput
-                    value={plot.color}
-                    onChange={(val) => editPlot({ ...plot, color: val })}
-                />
-            </Section>
-
-            <Section label="Fill color">
-                <ColorInput
-                    value={plot.fill}
-                    onChange={(val) => editPlot({ ...plot, fill: val })}
+            <Section label="Layout">
+                <NumberInput
+                    minValue={0}
+                    label={<AlignHorizontalSpaceAround  {...inputIconProps} />}
+                    value={plot.padding}
+                    onChange={(val) => editPlot({ ...plot, padding: val })}
                 />
             </Section>
 
             <HR />
 
-            <Section label="Thickness">
+            <Section label="Color">
+                <DynamicColor
+                    value={plot.fill}
+                    onChange={(newColor) => editPlot({ ...plot, fill: newColor })}
+                    dataset={props.dataset}
+                />
+            </Section>
+
+            <Section label="Border">
+                <ColorInput
+                    value={plot.color}
+                    onChange={(val) => editPlot({ ...plot, color: val })}
+                />
                 <NumberInput
                     minValue={0}
                     label={<Ruler  {...inputIconProps} />}
@@ -150,6 +158,7 @@ export const LinePlotPanel = (props: IAxisPanel) => {
                 />
             </Section>
 
+            <HR />
 
         </div>
 

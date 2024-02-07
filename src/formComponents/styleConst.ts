@@ -1,4 +1,4 @@
 export const inputIconProps = {
-  size: 16,
-  style: { margin: "7px" },
+  size: 14,
+  color: "rgba(0, 0, 0, 0.88)",
 };

@@ -2,12 +2,17 @@ import { Button, Flex, Upload, UploadFile } from "antd"
 import { LevelsPanel } from "./LevelsPanel"
 import { useState } from "react"
 import { Dataset } from "../state/dto"
-import { Paperclip, UploadIcon } from "lucide-react"
+import { ArrowLeftFromLine, ArrowRightFromLine, Database, Layers3, Paperclip, UploadIcon } from "lucide-react"
 import { loadLocalDs, onFileUpload } from "../utils/data"
 import { UploadChangeParam } from "antd/es/upload"
 import { Section } from "../ui-elements/form/Section"
 import { SectionContainer } from "../ui-elements/form/SectionContainer"
 import { HR } from "../ui-elements/HR"
+import { LayerButton } from "../ui-elements/LayerButton"
+import { useDispatch, useSelector } from "react-redux"
+import { RootState } from "../state/store"
+import { toggleMainPanelSize } from "../state/layout/layoutSlice"
+import { Label } from "../ui-elements/Label"
 
 
 const iconAttributes = {
@@ -21,13 +26,19 @@ const buttonStyle: React.CSSProperties = {
     borderRadius: 0,
     height: "2.5rem"
 }
-
 export const MainPanel = (props: {
-    dataset: Dataset | undefined
+    datasets: Dataset[]
     datasetSelect: () => void;
     setDataset: (ds: Dataset) => void;
-    visible: boolean;
+    // visible: boolean;
+    onExport: () => void;
+    onGetCode: () => void;
 }) => {
+
+    const dispatch = useDispatch()
+
+    const minified = useSelector((state: RootState) => state.layout.mainPanelMinified)
+    const visible = useSelector((state: RootState) => state.layout.mainPanelVisible)
 
     const [sectionSelected, setSectionSelected] = useState<"items" | "data">("items")
 
@@ -47,34 +58,67 @@ export const MainPanel = (props: {
     }
 
     return <>
-        <div id="default-sidebar" className={`fixed top-12 left-0 z-40 w-60 h-screen transition-transform ${props.visible ? "" : "-translate-x-60"} bg-white shadow-2xl`} aria-label="Sidebar">
-            <div className="flex-col p-2">
-                <div className="flex flex-row justify-evenly pb-4 pt-2 border-b">
-                    <span
-                        onClick={() => setSectionSelected("items")}
-                        className={`text-sm font-medium cursor-pointer ${sectionSelected === "items" ? "underline" : ""}`}
-                    >Items</span>
-                    <span
-                        onClick={() => setSectionSelected("data")}
-                        className={`text-sm font-mediu cursor-pointer ${sectionSelected === "data" ? "underline" : ""}`}
-                    >Data</span>
-                </div>
-                {sectionSelected == "items" && <LevelsPanel />}
-                {sectionSelected == "data" && <SectionContainer>
-                    <Section label="Datasets list">
-                        {props.dataset && <div className="flex flex-col w-full">
-                            <div className="ds-box flex flex-row w-full h-10 border border-transparent items-center hover:border-gray-200 hover:bg-gray-100 cursor-pointer"
-                                onClick={() => props.datasetSelect()}
+        <div id="default-sidebar" className={`fixed top-12 left-0 z-40 h-screen transition-transform ${visible ? "" : "-translate-x-60"} bg-white shadow-2xl`} aria-label="Sidebar">
+            <div className={`flex-col p-2 ${minified ? "w-14" : "w-60"}`}>
+                <div className="pb-2 border-b">
+                    {!minified && <div className="flex justify-between w-full h-[40px] items-center">
+                        <div className="flex flex-row justify-evenly w-full grow-1">
+                            <div
+                                className="flex flex-row items-center cursor-pointer"
+                                onClick={() => setSectionSelected("items")}
                             >
-                                <Paperclip {...iconAttributes} className="p-[13px] h-10 w-10 ds-box-hover:bg-[blue]" />
-                                <span className="text-sm">{props.dataset.file.name}</span>
+                                <Layers3 {...iconAttributes} />
+                                <span
+                                    className={`text-sm font-medium ms-2 ${sectionSelected === "items" ? "underline" : ""}`}
+                                >Items</span>
                             </div>
-                        </div>}
-                    </Section>
+                            <div
+                                className="flex flex-row items-center cursor-pointer"
+                                onClick={() => setSectionSelected("data")}
+                            >
+                                <Database {...iconAttributes} />
+                                <span
+                                    className={`text-sm font-medium ms-2 ${sectionSelected === "data" ? "underline" : ""}`}
+                                >Data</span>
+                            </div>
+                        </div>
+                        <div
+                            className="flex w-[40px] h-[40px] p-2 items-center justify-center cursor-pointer hover:bg-[#eee]"
+                            onClick={() => dispatch(toggleMainPanelSize())}
+                        >
+                            <ArrowLeftFromLine {...iconAttributes} />
+                        </div>
+                    </div>}
+                    {minified && <LayerButton
+                        minified={minified}
+                        icon={<ArrowRightFromLine {...iconAttributes} />}
+                        label={"Expand"} padding={0}
+                        onClick={() => dispatch(toggleMainPanelSize())}
+                    />}
+                </div>
+                {sectionSelected == "items" && <LevelsPanel onExport={props.onExport} onGetCode={props.onGetCode} minified={minified} />}
+                {sectionSelected == "data" && <SectionContainer className={minified ? "" : "pl-2"}>
 
-                    <HR></HR>
+                    <div>
+                        {!minified && <Label>Datasets list</Label>}
+                        <div className="flex flex-col w-full">
+                            {props.datasets.map((ds, i) =>
+                                <LayerButton
+                                    key={ds.file.name + i}
+                                    label={ds.file.name}
+                                    icon={<Paperclip {...iconAttributes} />}
+                                    onClick={() => props.datasetSelect()}
+                                    // selected={selected && plot.name === selected.key}
+                                    padding={0}
+                                    minified={minified}
+                                />
+                            )}
+                        </div>
+                    </div>
 
-                    <Section label="Add dataset">
+                    <HR />
+
+                    <>{!minified && <Section label="Add dataset">
                         <Button
                             style={{ ...buttonStyle }}
                             onClick={() => _loadLocalDs()}
@@ -94,7 +138,7 @@ export const MainPanel = (props: {
                                 </button>
                             </Flex>
                         </Upload>
-                    </Section>
+                    </Section>}</>
                 </SectionContainer>
 
                 }

@@ -25,24 +25,9 @@ export interface DynamicContinuous<D, R> {
 //  *
 //  */
 
-export interface LinePlotProps {
-  color: string;
-  size: number;
-}
-
-export interface BarPlotProps {
-  color: string;
-  size: number;
-}
-
-export interface SpiderPlotProps {
-  color: string;
-  fillColor: string;
-  size: number;
-}
-
 export interface ScatterPlot extends ISelectable {
   name: string;
+  label: string;
   type: PlotType;
   xAxis: string;
   yAxis: string;
@@ -52,6 +37,7 @@ export interface ScatterPlot extends ISelectable {
 
 export interface LinePlot extends ISelectable {
   name: string;
+  label: string;
   type: PlotType;
   xAxis: string;
   yAxis: string;
@@ -62,29 +48,46 @@ export interface LinePlot extends ISelectable {
 
 export interface PiePlot extends ISelectable {
   name: string;
+  label: string;
   type: PlotType;
   circularAxis: string;
   radius: number;
   innerradius: number;
   color: DynamicContinuous<number, string> | DynamicContinuous<string, string>;
-  borderColor: DynamicContinuous<number, string> | DynamicContinuous<string, string>;
+  borderColor:
+    | DynamicContinuous<number, string>
+    | DynamicContinuous<string, string>;
   anglePadding: number;
   startAngle: number;
   endAngle: number;
 }
 
-export interface SpiderPlot extends ISelectable {
+export interface BarPlot extends ISelectable {
   name: string;
+  label: string;
   type: PlotType;
-  aces: string[];
-  plotProps: SpiderPlotProps;
+  xAxis: string;
+  yAxis: string;
+  fill: DynamicContinuous<number, string> | DynamicContinuous<string, string>;
+  color: string;
+  size: number;
+  padding: number;
 }
 
-export type Plot = ScatterPlot | PiePlot | SpiderPlot | LinePlot;
+export interface SpiderPlot extends ISelectable {
+  name: string;
+  label: string;
+  type: PlotType;
+  aces: string[];
+  // plotProps: SpiderPlotProps;
+}
+
+export type Plot = ScatterPlot | PiePlot | SpiderPlot | LinePlot | BarPlot;
 
 export const newScatterPlot = (xAxis?: string, yAxis?: string): ScatterPlot => {
   return {
     name: "plott",
+    label: "Scatter",
     type: PlotType.SCATTER,
     xAxis: xAxis ?? "",
     yAxis: yAxis ?? "",
@@ -96,6 +99,7 @@ export const newScatterPlot = (xAxis?: string, yAxis?: string): ScatterPlot => {
 export const newLinePlot = (xAxis?: string, yAxis?: string): LinePlot => {
   return {
     name: "plott",
+    label: "Line",
     type: PlotType.LINE,
     xAxis: xAxis ?? "",
     yAxis: yAxis ?? "",
@@ -108,6 +112,7 @@ export const newLinePlot = (xAxis?: string, yAxis?: string): LinePlot => {
 export const newColumnsPlot = (xAxis?: string, yAxis?: string): LinePlot => {
   return {
     name: "plott",
+    label: "Columns",
     type: PlotType.SCATTER,
     xAxis: xAxis ?? "",
     yAxis: yAxis ?? "",
@@ -117,30 +122,32 @@ export const newColumnsPlot = (xAxis?: string, yAxis?: string): LinePlot => {
   };
 };
 
+export const newBarPlot = (xAxis?: string, yAxis?: string): BarPlot => {
+  return {
+    name: "plott",
+    label: "Bar",
+    type: PlotType.BAR,
+    xAxis: xAxis ?? "",
+    yAxis: yAxis ?? "",
+    color: "#4682b440",
+    fill: { fixedValue: "steelblue" },
+    size: 1,
+    padding: 2,
+  };
+};
+
 export const newPiePlot = (circularAxis?: string): PiePlot => {
   return {
     name: "plott",
+    label: "Pie",
     type: PlotType.PIE,
     circularAxis: circularAxis ?? "",
     radius: 100,
     innerradius: 30,
     color: { fixedValue: "steelblue" },
-    borderColor: {fixedValue: "#0000009a"},
+    borderColor: { fixedValue: "#0000009a" },
     anglePadding: 5,
     startAngle: 0,
     endAngle: 360,
-  };
-};
-
-export const newSpiderPlot = (aces?: string[]): SpiderPlot => {
-  return {
-    name: "plott",
-    type: PlotType.SPIDER,
-    aces: aces ?? [],
-    plotProps: {
-      color: "steelblue",
-      size: 3,
-      fillColor: "#4682b440",
-    } as SpiderPlotProps,
   };
 };

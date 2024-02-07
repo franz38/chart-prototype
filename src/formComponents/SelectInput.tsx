@@ -5,22 +5,14 @@ interface SelectInputProps<T> {
     value: T | undefined;
     onChange: (key: T) => void;
     readonly?: boolean;
-}
-
-const labelStyle: React.CSSProperties = {
-    display: "block",
-    lineHeight: "30px",
-    width: "30px",
-    textAlign: "center",
-    fontSize: "12px",
-    userSelect: "none",
+    short?: boolean;
 }
 
 export const SelectInput = <T,>(props: SelectInputProps<T>) => {
 
     return <>
-        <label className="flex flex-row text-[13px] min-w-[204px] h-[32px] border border-[#eee] ">
-            <span style={labelStyle}>{props.label}</span>
+        <label className={`flex flex-row text-[13px] ${props.short ? "min-w-[94px]" : "min-w-[204px]"} h-[32px] border border-[#eee] `}>
+            <span className="flex justify-center items-center w-[30px] h-[30px]">{props.label}</span>
             <select
                 disabled={props.readonly}
                 style={{ flexGrow: 1 }}

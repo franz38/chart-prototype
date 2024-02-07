@@ -58,3 +58,27 @@ export const drawLine = (
 
   return plotBox;
 };
+
+export const getLineCode = (
+  plot: LinePlot,
+  xAxis: LinearAxis | undefined,
+  yAxis: LinearAxis | undefined,
+  _chart: Chart
+): string => {
+  if (!xAxis || !yAxis) return "";
+
+  return `
+plt
+  .datum(data.values)
+  .attr("fill", "none")
+  .attr("stroke", "${plot.color}")
+  .attr("stroke-width", ${plot.size})
+  .attr(
+    "d",
+    d3
+      .line()
+      .x((d) => yScale(d["${xAxis.key}"]))
+      .y((d) => yScale(d["${yAxis.key}"]))
+  );
+`;
+};

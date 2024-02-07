@@ -9,7 +9,7 @@ import { Dataset } from "../../state/dto";
 import { isVertical } from "../../utils/axis";
 import { changeAxisKey } from "../../state/aces/acesSlice";
 import { SelectInput } from "../../formComponents/SelectInput";
-import { Box, Move3D, Ruler, Tag } from "lucide-react";
+import { Move3D, Ruler, Tag } from "lucide-react";
 import { inputIconProps } from "../../formComponents/styleConst";
 import { NumberInput } from "../../formComponents/NumberInput";
 import { AxisType, LinearAxis } from "../../state/aces/dto";
@@ -17,6 +17,7 @@ import { getRange } from "../../utils/data";
 import { DynamicColor } from "../../formComponents/DynamicColor";
 import { HR } from "../../ui-elements/HR";
 import { Section } from "../../ui-elements/form/Section";
+import { DatasetSelector, PlotTypeSelector } from "./components";
 
 
 interface IAxisPanel {
@@ -69,18 +70,14 @@ export const ScatterPlotPanel = (props: IAxisPanel) => {
 
         <span></span>
 
-        <Section label="Plot type">
-            <SelectInput
-                label={<Box {...inputIconProps} />}
-                options={[
-                    { value: PlotType.LINE, label: "Line" },
-                    { value: PlotType.SCATTER, label: "Scatter" },
-                    { value: PlotType.PIE, label: "Pie/Donuts" },
-                ]}
-                value={plot.type}
-                onChange={(val) => props.changePlotType(plot, val)}
-            />
-        </Section>
+        <DatasetSelector 
+            datasets={props.dataset ? [props.dataset] : []}
+        />
+
+        <PlotTypeSelector 
+            plot={plot}
+            onChange={(val) => props.changePlotType(plot, val)}
+        />
 
         <HR />
 
@@ -94,7 +91,7 @@ export const ScatterPlotPanel = (props: IAxisPanel) => {
             />
             <SelectInput
                 label={<Tag {...inputIconProps} />}
-                options={props.dataset?.props.map(p => ({ value: p, label: p }))}
+                options={props.dataset?.props.map(p => p.key).map(p => ({ value: p, label: p }))}
                 value={aces.find(ax => ax.id === plot.xAxis)?.key}
                 onChange={(val) => dispatch(changeAxisKey({
                     axis: aces.find(ax => ax.id === plot.xAxis),
@@ -116,7 +113,7 @@ export const ScatterPlotPanel = (props: IAxisPanel) => {
             />
             <SelectInput
                 label={<Tag {...inputIconProps} />}
-                options={props.dataset?.props.map(p => ({ value: p, label: p }))}
+                options={props.dataset?.props.map(p => p.key).map(p => ({ value: p, label: p }))}
                 value={aces.find(ax => ax.id === plot.yAxis)?.key}
                 onChange={(val) => dispatch(changeAxisKey({
                     axis: aces.find(ax => ax.id === plot.yAxis),
@@ -142,7 +139,7 @@ export const ScatterPlotPanel = (props: IAxisPanel) => {
         <Section label="Size">
             <SelectInput
                 label={<Tag {...inputIconProps} />}
-                options={[{ value: "fixed", label: "fixed" }, ...props.dataset?.props.map(p => ({ value: p, label: p })) ?? []]}
+                options={[{ value: "fixed", label: "fixed" }, ...props.dataset?.props.map(p => p.key).map(p => ({ value: p, label: p })) ?? []]}
                 value={plot.size.key ? plot.size.key : "fixed"}
                 onChange={(val) => {
                     if (val !== "fixed")

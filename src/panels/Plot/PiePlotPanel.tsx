@@ -7,13 +7,14 @@ import { Selection } from "../../state/selected/selectedSlice"
 import { Dataset } from "../../state/dto";
 import { changeAxisKey } from "../../state/aces/acesSlice";
 import { SelectInput } from "../../formComponents/SelectInput";
-import { Box, DraftingCompass, Radius, Tag } from "lucide-react";
+import { DraftingCompass, Radius, Tag } from "lucide-react";
 import { inputIconProps } from "../../formComponents/styleConst";
 import { NumberInput } from "../../formComponents/NumberInput";
 import { AxisType, CircularAxis } from "../../state/aces/dto";
 import { DynamicColor } from "../../formComponents/DynamicColor";
 import { Section } from "../../ui-elements/form/Section";
 import { HR } from "../../ui-elements/HR";
+import { DatasetSelector, PlotTypeSelector } from "./components";
 
 
 interface IAxisPanel {
@@ -36,32 +37,28 @@ export const PiePlotPanel = (props: IAxisPanel) => {
 
             <span></span>
 
-            <Section label="Plot type">
-                <SelectInput
-                    label={<Box {...inputIconProps} />}
-                    options={[
-                        { value: PlotType.LINE, label: "Line" },
-                        { value: PlotType.SCATTER, label: "Scatter" },
-                        { value: PlotType.PIE, label: "Pie/Donuts" },
-                    ]}
-                    value={plot.type}
-                    onChange={(val) => props.changePlotType(plot, val)}
-                />
-            </Section>
+            <DatasetSelector
+                datasets={props.dataset ? [props.dataset] : []}
+            />
+
+            <PlotTypeSelector
+                plot={plot}
+                onChange={(val) => props.changePlotType(plot, val)}
+            />
 
             <HR />
 
             <Section label="Axis">
-            <SelectInput
-                label={<Tag {...inputIconProps} />}
-                options={props.dataset?.props.map(p => ({ value: p, label: p }))}
-                value={aces.find(ax => ax.id === plot.circularAxis)?.key}
-                onChange={(val) => dispatch(changeAxisKey({
-                    axis: aces.find(ax => ax.id === plot.circularAxis),
-                    dataset: props.dataset,
-                    newKey: val
-                }))}
-            />
+                <SelectInput
+                    label={<Tag {...inputIconProps} />}
+                    options={props.dataset?.props.filter(p => p.type === "continous").map(p => p.key).map(p => ({ value: p, label: p }))}
+                    value={aces.find(ax => ax.id === plot.circularAxis)?.key}
+                    onChange={(val) => dispatch(changeAxisKey({
+                        axis: aces.find(ax => ax.id === plot.circularAxis),
+                        dataset: props.dataset,
+                        newKey: val
+                    }))}
+                />
             </Section>
 
             <HR />
