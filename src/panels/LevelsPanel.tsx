@@ -4,11 +4,11 @@ import { PlotType } from "../state/dto";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../state/store";
 import { setSelected } from "../state/selected/selectedSlice";
-import { Move3D, Box, ScatterChart, LineChart, PieChart, HelpCircle, BarChart3, MoreVertical, Clipboard, Image } from "lucide-react"
+import { Move3D, Box, ScatterChart, LineChart, PieChart, HelpCircle, BarChart3, MoreVertical, Clipboard, Image, Shapes } from "lucide-react"
 import { AxisType } from "../state/aces/dto";
 import { LayerButton } from "../ui-elements/LayerButton";
 
-const iconAttributes = {
+export const iconAttributes = {
     size: 14,
     color: "rgba(0, 0, 0, 0.88)",
 }
@@ -28,7 +28,7 @@ const getPlotIcon = (plot: Plot) => {
     }
 }
 
-export const LevelsPanel = (props: { onExport: () => void, onGetCode: () => void, minified: boolean }) => {
+export const LevelsPanel = (props: { onExport: (format: "svg" | "png") => void, onGetCode: () => void, minified: boolean }) => {
 
     const dispatch = useDispatch()
     const plots = useSelector((state: RootState) => state.plots)
@@ -50,7 +50,7 @@ export const LevelsPanel = (props: { onExport: () => void, onGetCode: () => void
                 <Box {...iconAttributes} className="me-2" />
                 <span className="text-sm">Chart</span>
             </div>
-            {false && <MoreVertical
+            {true && <MoreVertical
                 {...iconAttributes}
                 className="h-[30px] w-[30px] p-[7px] border border-[transparent] hover:border-[#ccc]"
                 onClick={(e) => { e.stopPropagation(); setSubMenu(!subMenu) }}
@@ -60,17 +60,23 @@ export const LevelsPanel = (props: { onExport: () => void, onGetCode: () => void
                 className={`${subMenu ? "" : "hidden"} absolute left-full bg-white ms-2 p-1 w-[160px]`}
                 onMouseLeave={() => setSubMenu(false)}
             >
-                <div className="flex flex-row justify-start items-center px-4 py-2 h-[40px] w-full hover:bg-[#eee] cursor-pointer rounded-sm"
+                {false && <div className="flex flex-row justify-start items-center px-4 py-2 h-[40px] w-full hover:bg-[#eee] cursor-pointer rounded-sm"
                     onClick={(e) => { e.stopPropagation(); props.onGetCode() }}
                 >
                     <Clipboard {...iconAttributes} className="me-2" />
                     <span className="text-sm">Copy code</span>
+                </div>}
+                <div className="flex flex-row justify-start items-center px-4 py-2 h-[40px] w-full hover:bg-[#eee] cursor-pointer rounded-sm"
+                    onClick={(e) => { e.stopPropagation(); props.onExport("svg") }}
+                >
+                    <Shapes {...iconAttributes} className="me-2" />
+                    <span className="text-sm">Export svg</span>
                 </div>
                 <div className="flex flex-row justify-start items-center px-4 py-2 h-[40px] w-full hover:bg-[#eee] cursor-pointer rounded-sm"
-                    onClick={(e) => { e.stopPropagation(); props.onExport() }}
+                    onClick={(e) => { e.stopPropagation(); props.onExport("png") }}
                 >
                     <Image {...iconAttributes} className="me-2" />
-                    <span className="text-sm">Export svg</span>
+                    <span className="text-sm">Export png</span>
                 </div>
             </div>
 

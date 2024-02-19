@@ -2,7 +2,7 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { Chart } from "./dto";
 
 const initialState: Chart = {
-  name: "",
+  name: "chart",
   rect: { x: 400, y: 100, w: 400, h: 200 },
   backgroundColor: "#DFECFF",
   padding: [50, 50, 50, 50],
@@ -36,6 +36,9 @@ const chartSlice = createSlice({
     },
     setColor: (state, action: PayloadAction<string>) => {
       state.backgroundColor = action.payload;
+    },
+    setFileName: (state, action: PayloadAction<string>) => {
+      state.fileName = action.payload;
     },
     setPadding: (
       state,
@@ -82,6 +85,7 @@ export const {
   handle3,
   handle4,
   drag,
-  show
+  show,
+  setFileName
 } = chartSlice.actions;
 export default chartSlice.reducer;

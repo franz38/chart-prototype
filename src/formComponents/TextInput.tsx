@@ -4,12 +4,14 @@ interface TextInputProps {
     label?: string | React.ReactNode;
     value: string;
     onChange: (v: string) => void;
+    title?: string;
 }
 
 export const TextInput = (props: TextInputProps) => {
 
     return <>
         <label
+            title={props.title}
             className="w-full flex items-center rounded-sm border border-[#eee]"
         >
             {props.label && <span

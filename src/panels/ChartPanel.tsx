@@ -3,15 +3,18 @@ import { NumberInput } from "../formComponents/NumberInput";
 import { ColorInput } from "../formComponents/ColorInput";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../state/store";
-import { moveX, moveY, resizeW, resizeH, setColor, setPadding } from "../state/chart/chartSlice";
+import { moveX, moveY, resizeW, resizeH, setColor, setPadding, setFileName } from "../state/chart/chartSlice";
 import { CheckInput } from "../formComponents/CheckInput";
 import { updateAxis } from "../state/aces/acesSlice";
 import { PlotType } from "../state/dto";
 import { Section } from "../ui-elements/form/Section";
 import { HR } from "../ui-elements/HR";
+import { Clipboard, FilePenLine, Image, Shapes } from "lucide-react";
+import { iconAttributes } from "./LevelsPanel";
+import { TextInput } from "../formComponents/TextInput";
 
 
-export const ChartPanel = (props: { onExport: () => void, onGetCode: () => void }) => {
+export const ChartPanel = (props: { onExport: (format: "svg" | "png") => void, onGetCode: () => void }) => {
 
     const dispatch = useDispatch()
     const chart = useSelector((state: RootState) => state.chart)
@@ -113,12 +116,42 @@ export const ChartPanel = (props: { onExport: () => void, onGetCode: () => void 
                 </Section>
             </>}
 
-            {false && <HR />}
+            <HR />
 
-            {false && <Section label="Export">
-                <button onClick={() => props.onExport()}>get svg</button>
-                <button onClick={() => props.onGetCode()}>get code</button>
-            </Section>}
+            <Section label="Export">
+
+                <TextInput 
+                    value={chart.fileName ?? chart.name}
+                    onChange={(val) => dispatch(setFileName(val))}
+                    label={<FilePenLine  {...iconAttributes}/>}
+                    title="Filename"
+                />
+
+                <button 
+                    className="flex items-center justify-center text-sm w-full rounded-sm border border-[#eee] h-8 p-1" 
+                    onClick={() => props.onExport("svg")}
+                >
+                    <Shapes {...iconAttributes} className="me-2" />
+                    <span>as svg</span>
+                </button>
+
+                <button 
+                    className="flex items-center justify-center text-sm w-full rounded-sm border border-[#eee] h-8 p-1" 
+                    onClick={() => props.onExport("png")}
+                >
+                    <Image  {...iconAttributes} className="me-2" />
+                    <span>as png</span>
+                </button>
+
+                {false && <button 
+                    className="flex items-center justify-center text-sm w-full rounded-sm border border-[#eee] h-8 p-1" 
+                    onClick={() => props.onGetCode()}
+                >
+                    <Clipboard  {...iconAttributes} className="me-2" />
+                    <span>get code</span>
+                </button>}
+
+            </Section>
 
         </div>
     </>

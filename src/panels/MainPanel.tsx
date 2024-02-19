@@ -31,7 +31,7 @@ export const MainPanel = (props: {
     datasetSelect: () => void;
     setDataset: (ds: Dataset) => void;
     // visible: boolean;
-    onExport: () => void;
+    onExport: (format: "svg" | "png") => void;
     onGetCode: () => void;
 }) => {
 

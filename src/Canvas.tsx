@@ -29,7 +29,7 @@ import { LinePlotPanel } from "./panels/Plot/LinePlotPanel";
 import { drawLine, getLineCode } from "./draw/drawLine";
 import { drawBar } from "./draw/drawBar";
 import { BarPlotPanel } from "./panels/Plot/BarPlotPanel";
-import { exportSvg } from "./utils/export-svg";
+import { exportPng, exportSvg } from "./utils/export-svg";
 
 
 /**
@@ -59,6 +59,7 @@ export const Canvas = (props: { plotId: string }) => {
     }
 
     const svgRef = useRef(null)
+    const hiddenSvgRef = useRef(null)
 
     const initialize = () => {
         const svg = d3.select(svgRef.current)
@@ -335,10 +336,11 @@ export const Canvas = (props: { plotId: string }) => {
 
     }
 
-    const savePlot = () => {
-        // const _svg = d3.select(svgRef.current)
-        const _svg = document.getElementById("svg")
-        if (_svg) exportSvg(_svg)
+    const savePlot = (format: "svg" | "png") => {
+        if (format == "svg")
+            exportSvg(svgRef.current, hiddenSvgRef.current, chart.fileName ?? chart.name)
+        else
+            exportPng(svgRef.current, hiddenSvgRef.current, chart.fileName ?? chart.name)
     }
 
     const getCode = () => {
@@ -468,6 +470,8 @@ ${plotCode}
                 <rect width='800%' height='800%' transform='translate(0,0)' fill='url(#dottedPattern)' />
             </svg>
         </div>
+
+        <div className="" ref={hiddenSvgRef}></div>
 
         <MainPanel
             datasets={dataset ? [dataset] : []}

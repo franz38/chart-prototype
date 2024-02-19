@@ -7,4 +7,5 @@ export interface Chart extends ISelectable {
   backgroundColor: string;
   padding: number[];
   hidden?: boolean;
+  fileName?: string;
 }
