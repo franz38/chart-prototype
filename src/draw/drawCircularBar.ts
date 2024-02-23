@@ -12,13 +12,13 @@ export const drawCircularBar = (
   data: Dataset,
   xAxis: LinearAxis | undefined,
   yAxis: LinearAxis | undefined,
-  chart: Chart
+  chart: Chart,
 ) => {
   if (!xAxis || !yAxis) return;
 
   const plt = d3ExistOrAppend(
     canvas.select(`g.${plot.name}`).select("path"),
-    () => canvas.append("g").attr("class", plot.name).append("path")
+    () => canvas.append("g").attr("class", plot.name).append("path"),
   );
 
   const _XScale = buildScale(xAxis, chart.rect);
@@ -36,7 +36,7 @@ export const drawCircularBar = (
       d3
         .line()
         .x((d) => _XScale((d as any)[xAxis.key ?? ""]) as number)
-        .y((d) => _YScale((d as any)[yAxis.key ?? ""]) as number)
+        .y((d) => _YScale((d as any)[yAxis.key ?? ""]) as number),
     );
   return plt;
 };

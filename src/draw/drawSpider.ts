@@ -9,13 +9,12 @@ export const drawSpider = (
   plot: SpiderPlot,
   _data: Dataset,
   aces: RadarAxis[],
-  _chart: Chart
+  _chart: Chart,
 ) => {
-
   if (!aces || aces.length == 0) return;
 
   const plt = d3ExistOrAppend(canvas.select(`g.${plot.name}`), () =>
-    canvas.append("g").attr("class", plot.name)
+    canvas.append("g").attr("class", plot.name),
   );
 
   // const _XScale = buildScale(xAxis, chart.rect) as any;
@@ -24,10 +23,7 @@ export const drawSpider = (
 
   // const plotProps = plot.plotProps as SpiderPlotProps;
 
-  plt.append("circle")
-    .attr("r", 100)
-    .attr("cx", 0)
-    .attr("cy", 0)
+  plt.append("circle").attr("r", 100).attr("cx", 0).attr("cy", 0);
 
   // plt
   //   .selectAll("circle")

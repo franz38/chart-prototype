@@ -12,20 +12,20 @@ export const drawLine = (
   data: Dataset,
   xAxis: LinearAxis | undefined,
   yAxis: LinearAxis | undefined,
-  chart: Chart
+  chart: Chart,
 ) => {
   if (!xAxis || !yAxis) return;
 
   const plotBox = d3ExistOrAppend(canvas.select(`g.${plot.name}`), () =>
-    canvas.append("g").attr("class", plot.name)
+    canvas.append("g").attr("class", plot.name),
   ) as any;
 
   const plt2 = d3ExistOrAppend(plotBox.select("path.p2"), () =>
-    plotBox.append("path").attr("class", "p2")
+    plotBox.append("path").attr("class", "p2"),
   );
 
   const plt = d3ExistOrAppend(plotBox.select("path.p1"), () =>
-    plotBox.append("path").attr("class", "p1")
+    plotBox.append("path").attr("class", "p1"),
   );
 
   const _XScale = buildScale(xAxis, chart.rect);
@@ -41,7 +41,7 @@ export const drawLine = (
       d3
         .line()
         .x((d) => _XScale((d as any)[xAxis.key ?? ""]) as number)
-        .y((d) => _YScale((d as any)[yAxis.key ?? ""]) as number)
+        .y((d) => _YScale((d as any)[yAxis.key ?? ""]) as number),
     );
 
   plt2
@@ -53,7 +53,7 @@ export const drawLine = (
         .area()
         .x((d) => _XScale((d as any)[xAxis.key ?? ""]) as number)
         .y1((d) => _YScale((d as any)[yAxis.key ?? ""]) as number)
-        .y0(yAxis.invert ? _YScale.range()[0] : _YScale.range()[1])
+        .y0(yAxis.invert ? _YScale.range()[0] : _YScale.range()[1]),
     );
 
   return plotBox;
@@ -63,7 +63,7 @@ export const getLineCode = (
   plot: LinePlot,
   xAxis: LinearAxis | undefined,
   yAxis: LinearAxis | undefined,
-  _chart: Chart
+  _chart: Chart,
 ): string => {
   if (!xAxis || !yAxis) return "";
 

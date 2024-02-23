@@ -12,12 +12,12 @@ export const drawScatter = (
   data: Dataset,
   xAxis: LinearAxis | undefined,
   yAxis: LinearAxis | undefined,
-  chart: Chart
+  chart: Chart,
 ) => {
   if (!xAxis || !yAxis) return;
 
   const plt = d3ExistOrAppend(canvas.select(`g.${plot.name}`), () =>
-    canvas.append("g").attr("class", plot.name)
+    canvas.append("g").attr("class", plot.name),
   );
 
   const _XScale = buildScale(xAxis, chart.rect) as any;
@@ -28,12 +28,12 @@ export const drawScatter = (
     if (typeof plot.color.domain[0] === "number")
       colorScale = d3.scaleLinear(
         plot.color.domain as number[],
-        plot.color.range
+        plot.color.range,
       );
     else
       colorScale = d3.scaleOrdinal(
         plot.color.domain as string[],
-        plot.color.range
+        plot.color.range,
       );
   }
 
@@ -41,7 +41,7 @@ export const drawScatter = (
   if (plot.size.key)
     sizeScale = d3.scaleLinear(
       plot.size.domain as number[],
-      plot.size.range as number[]
+      plot.size.range as number[],
     );
 
   const getColor = (d: any) => {
@@ -70,7 +70,7 @@ export const getScatterCode = (
   plot: ScatterPlot,
   xAxis: LinearAxis | undefined,
   yAxis: LinearAxis | undefined,
-  _chart: Chart
+  _chart: Chart,
 ): string => {
   if (!xAxis || !yAxis) return "";
 

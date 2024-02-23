@@ -2,7 +2,7 @@ import { hsla, parseToRgba, rgba, toHex, toHsla } from "color2k";
 
 export const randomColor = (): string => {
   return toHex(
-    rgba(Math.random() * 255, Math.random() * 255, Math.random() * 255, 1)
+    rgba(Math.random() * 255, Math.random() * 255, Math.random() * 255, 1),
   );
 };
 
@@ -12,8 +12,8 @@ export const randomNiceColor = (): string => {
       Math.random() * 360,
       0.25 + Math.random() * 0.75,
       0.25 + Math.random() * 0.75,
-      1
-    )
+      1,
+    ),
   );
 };
 

@@ -30,7 +30,7 @@ export const drawChartSelection = (selectionRect: any, chart: Chart) => {
 export const drawAxisSelection = (
   selectionRect: any,
   chart: Chart,
-  axis: LinearAxis
+  axis: LinearAxis,
 ) => {
   let x = -chart.padding[3];
   let y = chart.rect.y - chart.padding[0];

@@ -55,7 +55,7 @@ export const exportSvg = (svgRef: any, hiddenSvgRef: any, fileName: string) => {
 export const exportPng = async (
   svgRef: any,
   hiddenSvgRef: any,
-  fileName: string
+  fileName: string,
 ) => {
   const rect = (
     d3.select(svgRef).select("g").node() as any

@@ -1,10 +1,5 @@
 import * as d3 from "d3";
-import {
-  Axis,
-  AxisPosition,
-  AxisType,
-  LinearAxis,
-} from "../state/aces/dto";
+import { Axis, AxisPosition, AxisType, LinearAxis } from "../state/aces/dto";
 import { Rect } from "../state/dto";
 import { buildScale, getScaleCode } from "../utils/d3";
 import { isVertical } from "../utils/axis";
@@ -14,7 +9,7 @@ export const _drawAxis = (
   _axis: Axis,
   chart: Chart,
   svgRef: React.MutableRefObject<null>,
-  plotId: string
+  plotId: string,
 ) => {
   if (_axis.type === AxisType.Linear) {
     const axis = _axis as LinearAxis;
@@ -23,7 +18,7 @@ export const _drawAxis = (
       .select(`g.${plotId}`)
       .select("g.acesBox")
       .select("g.shapes");
-      
+
     _svg.select(`g.${axis.position}`).remove();
     const ax = _svg.append("g").attr("class", axis.position);
     let ax2: any;
@@ -50,7 +45,7 @@ export const _drawAxis = (
 export const renderBottomAxis = (
   gContainer: d3.Selection<SVGGElement, unknown, null, undefined>,
   chartRect: Rect,
-  axis: LinearAxis
+  axis: LinearAxis,
 ) => {
   const axisInstance = gContainer
     .call(d3.axisBottom(buildScale(axis, chartRect) as any))
@@ -61,7 +56,7 @@ export const renderBottomAxis = (
 export const renderLeftAxis = (
   gContainer: d3.Selection<SVGGElement, unknown, null, undefined>,
   chartRect: Rect,
-  axis: LinearAxis
+  axis: LinearAxis,
 ) => {
   const axisInstance = gContainer
     .call(d3.axisLeft(buildScale(axis, chartRect) as any))
@@ -73,7 +68,7 @@ export const renderAxis = (
   _gContainer: d3.Selection<SVGGElement, unknown, null, undefined>,
   chartRect: Rect,
   axis: LinearAxis,
-  axisInstance: any
+  axisInstance: any,
 ) => {
   const style = axis.style;
 
@@ -109,38 +104,34 @@ export const renderAxis = (
     .select("text")
     .attr("style", () => {
       if (axis.style.textAngle <= -45)
-        return `text-anchor: end; transform: rotate(${axis.style.textAngle}deg); transform-origin: right`
+        return `text-anchor: end; transform: rotate(${axis.style.textAngle}deg); transform-origin: right`;
       else
-        return `transform: translateY(${Math.sin(-axis.style.textAngle*Math.PI/180)*100}%) rotate(${axis.style.textAngle}deg); transform-origin: center`
+        return `transform: translateY(${Math.sin((-axis.style.textAngle * Math.PI) / 180) * 100}%) rotate(${axis.style.textAngle}deg); transform-origin: center`;
     })
     .attr("fill", style.fontColor)
     .attr("font-size", style.fontSize)
-    .attr("display", style.tickTextVisible ? "initial" : "none")
+    .attr("display", style.tickTextVisible ? "initial" : "none");
 };
 
-export const getAxisCode = (
-  _axis: Axis,
-  chart: Chart,
-): string => {
-
-  if (_axis.type !== AxisType.Linear) return ""
-  const axis = _axis as LinearAxis
+export const getAxisCode = (_axis: Axis, chart: Chart): string => {
+  if (_axis.type !== AxisType.Linear) return "";
+  const axis = _axis as LinearAxis;
   switch (axis.position) {
     case AxisPosition.BOTTOM:
       return `
 const xScale = ${getScaleCode(axis, chart.rect)}
 container
   .call(d3.axisBottom(xScale))
-  .attr("transform", "translate(0 ${chart.rect.h + axis.margin})");`  
+  .attr("transform", "translate(0 ${chart.rect.h + axis.margin})");`;
     default:
     case AxisPosition.LEFT:
       return `
 const yScale = ${getScaleCode(axis, chart.rect)}
 container
   .call(d3.axisBottom(yScale))
-  .attr("transform", "translate(${-axis.margin} 0)");`  
-      
+  .attr("transform", "translate(${-axis.margin} 0)");`;
+
       break;
   }
-  return ""
-}
+  return "";
+};

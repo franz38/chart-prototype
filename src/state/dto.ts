@@ -13,7 +13,7 @@ interface FileMetaData {
 }
 
 export interface Dataset {
-  props: {key: string, type: "discrete" | "continous"}[];
+  props: { key: string; type: "discrete" | "continous" }[];
   values: any[];
   file: FileMetaData;
 }
@@ -26,5 +26,5 @@ export enum PlotType {
   SCATTER = "SCATTER",
   LINE = "LINE",
   PIE = "PIE",
-  BAR = "BAR"
+  BAR = "BAR",
 }

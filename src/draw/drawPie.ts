@@ -10,12 +10,12 @@ export const drawPie = (
   plot: PiePlot,
   data: Dataset,
   _chart: Chart,
-  circularAxis: CircularAxis
+  circularAxis: CircularAxis,
 ) => {
   if (!circularAxis) return;
 
   const plt = d3ExistOrAppend(canvas.select(`g.${plot.name}`), () =>
-    canvas.append("g").attr("class", plot.name)
+    canvas.append("g").attr("class", plot.name),
   );
 
   let colorScale: any = undefined;
@@ -23,12 +23,12 @@ export const drawPie = (
     if (typeof plot.color.domain[0] === "number")
       colorScale = d3.scaleLinear(
         plot.color.domain as number[],
-        plot.color.range as string[]
+        plot.color.range as string[],
       );
     else
       colorScale = d3.scaleOrdinal(
         plot.color.domain as string[],
-        plot.color.range as string[]
+        plot.color.range as string[],
       );
   }
 
@@ -37,12 +37,12 @@ export const drawPie = (
     if (typeof plot.borderColor.domain[0] === "number")
       borderColorScale = d3.scaleLinear(
         plot.borderColor.domain as number[],
-        plot.borderColor.range as string[]
+        plot.borderColor.range as string[],
       );
     else
       borderColorScale = d3.scaleOrdinal(
         plot.borderColor.domain as string[],
-        plot.borderColor.range as string[]
+        plot.borderColor.range as string[],
       );
   }
 
@@ -75,7 +75,7 @@ export const drawPie = (
     .join("path")
     .attr(
       "d",
-      d3.arc().innerRadius(plot.innerradius).outerRadius(plot.radius) as any
+      d3.arc().innerRadius(plot.innerradius).outerRadius(plot.radius) as any,
     )
     // .attr('fill', function(d){ return(color(d.data.key)) })
     .attr("fill", (d) => getColor(d))
@@ -89,7 +89,7 @@ export const drawPie = (
 export const getPieCode = (
   plot: PiePlot,
   circularAxis: CircularAxis,
-  _chart: Chart
+  _chart: Chart,
 ): string => {
   let borderScaleString = undefined;
   let colorScaleString = undefined;

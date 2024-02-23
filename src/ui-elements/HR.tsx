@@ -1,1 +1,1 @@
-export const HR = () => <hr className=""></hr>
+export const HR = () => <hr className=""></hr>;

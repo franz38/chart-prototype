@@ -1,9 +1,3 @@
-
-
 export const TupleInput = () => {
-
-
-    return <>
-        
-    </>
-}
+  return <></>;
+};
