@@ -130,7 +130,7 @@ export const SetupModal = (props: SetupModalProps) => {
         break;
     }
 
-    const _svg = d3.select("svg");
+    const _svg = d3.select("svg#svg");
     if (_svg) {
       const W = (_svg as any).node().getBoundingClientRect().width;
       const H = (_svg as any).node().getBoundingClientRect().height;
@@ -141,7 +141,7 @@ export const SetupModal = (props: SetupModalProps) => {
   };
 
   const alignChart = () => {
-    const _svg = d3.select("svg");
+    const _svg = d3.select("svg#svg");
     if (_svg) {
       const W = (_svg as any).node().getBoundingClientRect().width;
       const H = (_svg as any).node().getBoundingClientRect().height;
@@ -197,7 +197,7 @@ export const SetupModal = (props: SetupModalProps) => {
     );
     dispatch(setSelected({ type: "plot", key: plot.name }));
 
-    const _svg = d3.select("svg");
+    const _svg = d3.select("svg#svg");
     if (_svg) {
       const W = (_svg as any).node().getBoundingClientRect().width;
       const H = (_svg as any).node().getBoundingClientRect().height;
@@ -276,7 +276,7 @@ export const SetupModal = (props: SetupModalProps) => {
     );
     dispatch(setSelected({ type: "plot", key: plot.name }));
 
-    const _svg = d3.select("svg");
+    const _svg = d3.select("svg#svg");
     if (_svg) {
       const W = (_svg as any).node().getBoundingClientRect().width;
       const H = (_svg as any).node().getBoundingClientRect().height;
