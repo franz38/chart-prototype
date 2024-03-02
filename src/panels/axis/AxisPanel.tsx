@@ -142,7 +142,15 @@ export const AxisPanel = (props: IAxisPanel) => {
                     value={axis.label ?? axis.key}
                     onChange={v => _updateAxis({ ...axis, label: v })}
                 />
-                {/* <AlignInput /> */}
+                <ColorInput
+                    value={axis.labelStyle.color?.toString() ?? "#555"}
+                    onChange={(v) => _updateAxis({ ...axis,  labelStyle: {...axis.labelStyle, color: v} })}
+                />
+                <CheckInput
+                    label={<Eye {...inputIconProps} />}
+                    value={axis.labelStyle.display != "none"}
+                    onChange={(val) => _updateAxis({ ...axis, labelStyle: {...axis.labelStyle, display: val ? "initial" : "none"} })}
+                />
             </Section>
 
             <HR />

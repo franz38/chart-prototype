@@ -80,10 +80,11 @@ export const renderAxis = (
 
   const labelBox = axisInstance.append("g").attr("class", "label");
 
-  labelBox
-    .append("text")
-    .text(axis.label ?? axis.key)
-    .attr("fill", axis.labelStyle.color);
+  if (axis.labelStyle.display != "none")
+    labelBox
+      .append("text")
+      .text(axis.label ?? axis.key)
+      .attr("fill", axis.labelStyle.color);
 
   if (isVertical(axis))
     labelBox.attr("transform", `translate(-50 ${chartRect.h / 2})`);

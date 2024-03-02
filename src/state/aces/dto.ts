@@ -115,7 +115,7 @@ export const newLeftAxis = (key?: string, id?: string): LinearAxis => ({
   key: key ?? "",
   invert: true,
   showGrid: false,
-  labelStyle: { color: "#555", alignSelf: "center" },
+  labelStyle: { color: "#555", alignSelf: "center", display: "none" },
   label: undefined,
   style: defaultStyle,
 });
@@ -129,7 +129,7 @@ export const newBottomAxis = (key?: string, id?: string): LinearAxis => ({
   key: key ?? "",
   invert: false,
   showGrid: false,
-  labelStyle: { color: "#555", alignSelf: "center" },
+  labelStyle: { color: "#555", alignSelf: "center", display: "none" },
   label: undefined,
   style: defaultStyle,
 });
