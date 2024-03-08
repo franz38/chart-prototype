@@ -84,6 +84,25 @@ export interface SpiderPlot extends ISelectable {
 
 export type Plot = ScatterPlot | PiePlot | SpiderPlot | LinePlot | BarPlot;
 
+export const isScatter = (plot: Plot): plot is ScatterPlot => {
+  const plt = plot as ScatterPlot
+  return !!plt.xAxis && !!plt.yAxis && !(plot as LinePlot).fill;
+}
+
+export const isLine = (plot: Plot): plot is LinePlot => {
+  const plt = plot as LinePlot
+  return !!plt.xAxis && !!plt.yAxis && !!plt.fill && !(plot as BarPlot).padding;
+}
+
+export const isBar = (plot: Plot): plot is BarPlot => {
+  const plt = plot as BarPlot
+  return !!plt.xAxis && !!plt.yAxis && !!plt.fill && !!plt.padding;
+}
+
+export const isPie = (plot: Plot): plot is PiePlot => {
+  return !!(plot as PiePlot).circularAxis;
+}
+
 export const newScatterPlot = (xAxis?: string, yAxis?: string): ScatterPlot => {
   return {
     name: "plott",

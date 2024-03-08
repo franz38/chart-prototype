@@ -14,12 +14,12 @@ import {
 } from "../state/chart/chartSlice";
 import { CheckInput } from "../formComponents/CheckInput";
 import { updateAxis } from "../state/aces/acesSlice";
-import { PlotType } from "../state/dto";
 import { Section } from "../ui-elements/form/Section";
 import { HR } from "../ui-elements/HR";
 import { Clipboard, FilePenLine, Image, Shapes } from "lucide-react";
 import { iconAttributes } from "./LevelsPanel";
 import { TextInput } from "../formComponents/TextInput";
+import { isLine, isScatter } from "../state/plots/dto";
 
 export const ChartPanel = (props: {
   onExport: (format: "svg" | "png") => void;
@@ -103,7 +103,7 @@ export const ChartPanel = (props: {
         <HR />
 
         {plot &&
-          (plot.type === PlotType.SCATTER || plot.type === PlotType.LINE) && (
+          (isScatter(plot) || isLine(plot)) && (
             <>
               <Section label="Show grid">
                 <CheckInput

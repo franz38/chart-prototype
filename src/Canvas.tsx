@@ -6,7 +6,7 @@ import { _drawAxis, getAxisCode } from "./draw/drawAxis";
 import { AxisPanel } from "./panels/axis/AxisPanel";
 import { Axis, AxisType, CircularAxis, newBottomAxis, newCircularAxis, newLeftAxis } from "./state/aces/dto";
 import { LinearAxis } from "./state/aces/dto";
-import { BarPlot, LinePlot, PiePlot, Plot, ScatterPlot, newBarPlot, newLinePlot, newPiePlot, newScatterPlot } from "./state/plots/dto";
+import { BarPlot, LinePlot, PiePlot, Plot, ScatterPlot, isBar, isLine, isPie, isScatter, newBarPlot, newLinePlot, newPiePlot, newScatterPlot } from "./state/plots/dto";
 import { PlotType } from "./state/dto";
 import { drawScatter, getScatterCode } from "./draw/drawScatter";
 import { ChartPanel } from "./panels/ChartPanel";
@@ -70,6 +70,11 @@ export const Canvas = (props: { plotId: string }) => {
         const _svg = svg.append("g").attr("class", props.plotId)
 
         const chartBox = _svg.append("g").attr("class", "chartBox")
+            // .on("mouseover", function(d,i){
+            //     console.log("hover")
+            //     console.log(d3.select(this).select("g.selectorBox"))
+            //     d3.select(this).select("g.selectorBox").attr("display", "initial")
+            // })
 
         chartBox.append("g").attr("class", "shapes")
         const chartSelectorBox = chartBox
@@ -85,6 +90,7 @@ export const Canvas = (props: { plotId: string }) => {
                     dispatch(drag({ dx: (e.x - e.subject.x), dy: (e.y - e.subject.y) }))
                 })
             )
+            
         const handles = chartSelectorBox.append("g")
             .attr("class", "handles")
         handles.append("rect")
@@ -205,6 +211,18 @@ export const Canvas = (props: { plotId: string }) => {
             .attr("height", chart.rect.h + chart.padding[2] + chart.padding[0])
             .attr("fill", chart.backgroundColor)
             .on("click", (e) => { e.stopPropagation(); dispatch(setSelected({ type: "chart", key: "chart.name" })) })
+            .on("mouseover", function(d,i){
+                dispatch(setSelected({ type: "chart", key: "chart.name" }))
+                // console.log("hover")
+                // console.log(d3.select(this).select("g.selectorBox"))
+                // d3.select(this).select("g.selectorBox").attr("display", "initial")
+            })
+            .on("mouseout", function(d,i){
+                dispatch(setSelected(undefined))
+                // console.log("hover")
+                // console.log(d3.select(this).select("g.selectorBox"))
+                // d3.select(this).select("g.selectorBox").attr("display", "initial")
+            })
 
     }
 
@@ -348,27 +366,27 @@ export const Canvas = (props: { plotId: string }) => {
         if (!plots[0]) return
 
         const acesCode = aces.map(ax => getAxisCode(ax, chart)).join("\n")
-        
+
         let plotCode = ""
         switch (plots[0].type) {
             case PlotType.SCATTER:
                 plotCode = getScatterCode(
                     plots[0] as ScatterPlot,
-                    aces[0] as LinearAxis, 
-                    aces[1] as LinearAxis, 
+                    aces[0] as LinearAxis,
+                    aces[1] as LinearAxis,
                     chart)
                 break;
             case PlotType.LINE:
                 plotCode = getLineCode(
                     plots[0] as LinePlot,
-                    aces[0] as LinearAxis, 
-                    aces[1] as LinearAxis, 
+                    aces[0] as LinearAxis,
+                    aces[1] as LinearAxis,
                     chart)
                 break;
-            case PlotType.PIE:                
+            case PlotType.PIE:
                 plotCode = getPieCode(
                     plots[0] as PiePlot,
-                    aces[0] as CircularAxis, 
+                    aces[0] as CircularAxis,
                     chart)
                 break;
             default:
@@ -477,7 +495,7 @@ ${plotCode}
             datasets={dataset ? [dataset] : []}
             setDataset={ds => setDataset(ds)}
             datasetSelect={() => { dispatch(setSelected(undefined)); setDataModalOpen(true) }}
-            onExport={savePlot} 
+            onExport={savePlot}
             onGetCode={getCode}
         />
 
@@ -493,25 +511,25 @@ ${plotCode}
 
             {(selection?.type === "plot" && plots[0] !== undefined) && <>
 
-                {plots[0].type === PlotType.SCATTER &&
+                {isScatter(plots[0]) &&
                     <ScatterPlotPanel
                         dataset={dataset}
                         changePlotType={onPlotTypeChange}
                     />}
 
-                {plots[0].type === PlotType.LINE &&
+                {isLine(plots[0]) &&
                     <LinePlotPanel
                         dataset={dataset}
                         changePlotType={onPlotTypeChange}
                     />}
 
-                {plots[0].type === PlotType.BAR &&
+                {isBar(plots[0]) &&
                     <BarPlotPanel
                         dataset={dataset}
                         changePlotType={onPlotTypeChange}
                     />}
 
-                {plots[0].type === PlotType.PIE &&
+                {isPie(plots[0]) &&
                     <PiePlotPanel
                         dataset={dataset}
                         changePlotType={onPlotTypeChange}

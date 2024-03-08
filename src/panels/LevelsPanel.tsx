@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Plot } from "../state/plots/dto";
-import { PlotType } from "../state/dto";
+import { Plot, isBar, isLine, isPie, isScatter } from "../state/plots/dto";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../state/store";
 import { setSelected } from "../state/selected/selectedSlice";
@@ -26,18 +25,16 @@ export const iconAttributes = {
 };
 
 const getPlotIcon = (plot: Plot) => {
-  switch (plot.type) {
-    case PlotType.SCATTER:
-      return <ScatterChart {...iconAttributes} />;
-    case PlotType.LINE:
-      return <LineChart {...iconAttributes} />;
-    case PlotType.PIE:
-      return <PieChart {...iconAttributes} />;
-    case PlotType.BAR:
-      return <BarChart3 {...iconAttributes} />;
-    default:
-      return <HelpCircle {...iconAttributes} />;
-  }
+  if (isScatter(plot))
+    return <ScatterChart {...iconAttributes} />;
+  else if (isLine(plot))
+    return <LineChart {...iconAttributes} />;
+  else if (isPie(plot))
+    return <PieChart {...iconAttributes} />;
+  else if (isBar(plot))
+    return <BarChart3 {...iconAttributes} />;
+
+  return <HelpCircle {...iconAttributes} />;
 };
 
 export const LevelsPanel = (props: {
