@@ -14,6 +14,8 @@ const baseclass =
 export const LayerButton = (props: LayerButtonProps) => {
   const getPlt = (minified: boolean, padding: number): string => {
     if (!minified) {
+      if (padding == 3) return "pl-16";
+      if (padding == 2) return "pl-12";
       if (padding > 0) return "pl-8";
       else return "pl-4";
     }

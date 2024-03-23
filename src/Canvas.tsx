@@ -20,7 +20,6 @@ import { Dataset, Rect } from "./state/dto";
 import { drag, handle1 } from "./state/chart/chartSlice";
 import { addPlot, removePlot, replacePlot } from "./state/plots/plotsSlice";
 import { MainPanel } from "./panels/MainPanel";
-import { DatasetModal } from "./panels/DatasetModal";
 import { drawPie, getPieCode } from "./draw/drawPie";
 import { SetupModal } from "./panels/SetupModal";
 import { ScatterPlotPanel } from "./panels/Plot/ScatterPlotPanel";
@@ -51,7 +50,6 @@ export const Canvas = (props: { plotId: string }) => {
     const selection = useSelector((state: RootState) => state.selection.selection)
     const plots = useSelector((state: RootState) => state.plots)
     const [dataset, setDataset] = useState<Dataset>();
-    const [dataModalOpen, setDataModalOpen] = useState<boolean>(false)
 
     const getAxis = (id: string | undefined): Axis | undefined => {
         if (!id) return undefined
@@ -211,19 +209,6 @@ export const Canvas = (props: { plotId: string }) => {
             .attr("height", chart.rect.h + chart.padding[2] + chart.padding[0])
             .attr("fill", chart.backgroundColor)
             .on("click", (e) => { e.stopPropagation(); dispatch(setSelected({ type: "chart", key: "chart.name" })) })
-            .on("mouseover", function(d,i){
-                dispatch(setSelected({ type: "chart", key: "chart.name" }))
-                // console.log("hover")
-                // console.log(d3.select(this).select("g.selectorBox"))
-                // d3.select(this).select("g.selectorBox").attr("display", "initial")
-            })
-            .on("mouseout", function(d,i){
-                dispatch(setSelected(undefined))
-                // console.log("hover")
-                // console.log(d3.select(this).select("g.selectorBox"))
-                // d3.select(this).select("g.selectorBox").attr("display", "initial")
-            })
-
     }
 
     const drawAxis = (_axis: LinearAxis | CircularAxis) => {
@@ -494,15 +479,8 @@ ${plotCode}
         <MainPanel
             datasets={dataset ? [dataset] : []}
             setDataset={ds => setDataset(ds)}
-            datasetSelect={() => { dispatch(setSelected(undefined)); setDataModalOpen(true) }}
             onExport={savePlot}
             onGetCode={getCode}
-        />
-
-        <DatasetModal
-            open={dataModalOpen}
-            onClose={() => setDataModalOpen(false)}
-            dataset={dataset}
         />
 
         <div id="default-sidebar" className={`overflow-y-scroll fixed top-0 pt-14 px-2 pb-6 right-0 z-40 w-[240px] h-screen transition-transform  ${!!selection ? "" : "translate-x-60"}  bg-white shadow-2xl `} aria-label="Sidebar">

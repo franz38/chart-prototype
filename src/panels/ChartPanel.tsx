@@ -102,48 +102,45 @@ export const ChartPanel = (props: {
 
         <HR />
 
-        {plot &&
-          (isScatter(plot) || isLine(plot)) && (
-            <>
-              <Section label="Show grid">
-                <CheckInput
-                  label={<span className="text-xs">X</span>}
-                  value={
-                    (
-                      aces.find(
-                        (ax) =>
-                          (ax as LinearAxis).position == AxisPosition.BOTTOM,
-                      ) as LinearAxis
-                    )?.showGrid ?? false
-                  }
-                  onChange={(v) => {
-                    const ax = aces.find(
+        {plot && (isScatter(plot) || isLine(plot)) && (
+          <>
+            <Section label="Show grid">
+              <CheckInput
+                label={<span className="text-xs">X</span>}
+                value={
+                  (
+                    aces.find(
                       (ax) =>
                         (ax as LinearAxis).position == AxisPosition.BOTTOM,
-                    );
-                    if (ax) dispatch(updateAxis({ ...ax, showGrid: v }));
-                  }}
-                />
-                <CheckInput
-                  label={<span className="text-xs">Y</span>}
-                  value={
-                    (
-                      aces.find(
-                        (ax) =>
-                          (ax as LinearAxis).position == AxisPosition.LEFT,
-                      ) as LinearAxis
-                    )?.showGrid ?? false
-                  }
-                  onChange={(v) => {
-                    const ax = aces.find(
+                    ) as LinearAxis
+                  )?.showGrid ?? false
+                }
+                onChange={(v) => {
+                  const ax = aces.find(
+                    (ax) => (ax as LinearAxis).position == AxisPosition.BOTTOM,
+                  );
+                  if (ax) dispatch(updateAxis({ ...ax, showGrid: v }));
+                }}
+              />
+              <CheckInput
+                label={<span className="text-xs">Y</span>}
+                value={
+                  (
+                    aces.find(
                       (ax) => (ax as LinearAxis).position == AxisPosition.LEFT,
-                    );
-                    if (ax) dispatch(updateAxis({ ...ax, showGrid: v }));
-                  }}
-                />
-              </Section>
-            </>
-          )}
+                    ) as LinearAxis
+                  )?.showGrid ?? false
+                }
+                onChange={(v) => {
+                  const ax = aces.find(
+                    (ax) => (ax as LinearAxis).position == AxisPosition.LEFT,
+                  );
+                  if (ax) dispatch(updateAxis({ ...ax, showGrid: v }));
+                }}
+              />
+            </Section>
+          </>
+        )}
 
         <HR />
 

@@ -25,14 +25,10 @@ export const iconAttributes = {
 };
 
 const getPlotIcon = (plot: Plot) => {
-  if (isScatter(plot))
-    return <ScatterChart {...iconAttributes} />;
-  else if (isLine(plot))
-    return <LineChart {...iconAttributes} />;
-  else if (isPie(plot))
-    return <PieChart {...iconAttributes} />;
-  else if (isBar(plot))
-    return <BarChart3 {...iconAttributes} />;
+  if (isScatter(plot)) return <ScatterChart {...iconAttributes} />;
+  else if (isLine(plot)) return <LineChart {...iconAttributes} />;
+  else if (isPie(plot)) return <PieChart {...iconAttributes} />;
+  else if (isBar(plot)) return <BarChart3 {...iconAttributes} />;
 
   return <HelpCircle {...iconAttributes} />;
 };
@@ -150,7 +146,7 @@ export const LevelsPanel = (props: {
               dispatch(setSelected({ type: "axis", key: axis.id }))
             }
             selected={selected && axis.id == selected.key}
-            padding={1}
+            padding={2}
             minified={props.minified}
           />
         ))}

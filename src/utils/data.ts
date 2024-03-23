@@ -21,7 +21,15 @@ export const parseDS = (ds: Dataset): Dataset => {
     });
   });
 
-  return { ...ds };
+  return {
+    ...ds,
+    props: ds.props.map((p) => {
+      return {
+        ...p,
+        extent: getRange(ds, p.key) ?? [],
+      };
+    }),
+  };
 };
 
 export const loadLocalDs = async (localPath: string) => {
@@ -35,6 +43,7 @@ export const loadLocalDs = async (localPath: string) => {
     props: Object.keys(res[0]).map((k) => ({
       key: k,
       type: isNaN(res[0][k] as any) ? "discrete" : "continous",
+      extent: [],
     })),
     values: [
       ...res.map((v) => {
@@ -75,6 +84,7 @@ export const onFileUpload = async (file: File | undefined) => {
         props: csv_props.map((k, _i) => ({
           key: k,
           type: isNaN(values[0][k] as any) ? "discrete" : "continous",
+          extent: [],
         })),
         values: values,
       };
