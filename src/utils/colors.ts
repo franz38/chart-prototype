@@ -1,18 +1,18 @@
 import { hsla, parseToRgba, rgba, toHex, toHsla } from "color2k";
 
-export const randomColor = (): string => {
+export const randomColor = (opacity: number = 1): string => {
   return toHex(
-    rgba(Math.random() * 255, Math.random() * 255, Math.random() * 255, 1),
+    rgba(Math.random() * 255, Math.random() * 255, Math.random() * 255, opacity),
   );
 };
 
-export const randomNiceColor = (): string => {
+export const randomNiceColor = (opacity: number = 1): string => {
   return toHex(
     hsla(
       Math.random() * 360,
       0.25 + Math.random() * 0.75,
       0.25 + Math.random() * 0.75,
-      1,
+      opacity,
     ),
   );
 };
