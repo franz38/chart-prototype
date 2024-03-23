@@ -6,7 +6,7 @@ import { _drawAxis, getAxisCode } from "./draw/drawAxis";
 import { AxisPanel } from "./panels/axis/AxisPanel";
 import { Axis, AxisType, CircularAxis, newBottomAxis, newCircularAxis, newLeftAxis } from "./state/aces/dto";
 import { LinearAxis } from "./state/aces/dto";
-import { BarPlot, LinePlot, PiePlot, Plot, ScatterPlot, isBar, isLine, isPie, isScatter, newBarPlot, newLinePlot, newPiePlot, newScatterPlot } from "./state/plots/dto";
+import { LinePlot, PiePlot, Plot, ScatterPlot, isBar, isLine, isPie, isScatter, isSpider, newBarPlot, newLinePlot, newPiePlot, newScatterPlot } from "./state/plots/dto";
 import { PlotType } from "./state/dto";
 import { drawScatter, getScatterCode } from "./draw/drawScatter";
 import { ChartPanel } from "./panels/ChartPanel";
@@ -21,7 +21,7 @@ import { drag, handle1 } from "./state/chart/chartSlice";
 import { addPlot, removePlot, replacePlot } from "./state/plots/plotsSlice";
 import { MainPanel } from "./panels/MainPanel";
 import { drawPie, getPieCode } from "./draw/drawPie";
-import { SetupModal } from "./panels/SetupModal";
+import { SetupModal } from "./panels/setupMenu/SetupModal";
 import { ScatterPlotPanel } from "./panels/Plot/ScatterPlotPanel";
 import { PiePlotPanel } from "./panels/Plot/PiePlotPanel";
 import { LinePlotPanel } from "./panels/Plot/LinePlotPanel";
@@ -29,6 +29,8 @@ import { drawLine, getLineCode } from "./draw/drawLine";
 import { drawBar } from "./draw/drawBar";
 import { BarPlotPanel } from "./panels/Plot/BarPlotPanel";
 import { exportPng, exportSvg } from "./utils/export-svg";
+import { SpiderPlotPanel } from "./panels/Plot/SpiderPlotPanel";
+import { drawSpider } from "./draw/drawSpider";
 
 
 /**
@@ -50,6 +52,7 @@ export const Canvas = (props: { plotId: string }) => {
     const selection = useSelector((state: RootState) => state.selection.selection)
     const plots = useSelector((state: RootState) => state.plots)
     const [dataset, setDataset] = useState<Dataset>();
+    // const [dataModalOpen, setDataModalOpen] = useState<boolean>(false)
 
     const getAxis = (id: string | undefined): Axis | undefined => {
         if (!id) return undefined
@@ -68,11 +71,11 @@ export const Canvas = (props: { plotId: string }) => {
         const _svg = svg.append("g").attr("class", props.plotId)
 
         const chartBox = _svg.append("g").attr("class", "chartBox")
-            // .on("mouseover", function(d,i){
-            //     console.log("hover")
-            //     console.log(d3.select(this).select("g.selectorBox"))
-            //     d3.select(this).select("g.selectorBox").attr("display", "initial")
-            // })
+        // .on("mouseover", function(d,i){
+        //     console.log("hover")
+        //     console.log(d3.select(this).select("g.selectorBox"))
+        //     d3.select(this).select("g.selectorBox").attr("display", "initial")
+        // })
 
         chartBox.append("g").attr("class", "shapes")
         const chartSelectorBox = chartBox
@@ -88,7 +91,7 @@ export const Canvas = (props: { plotId: string }) => {
                     dispatch(drag({ dx: (e.x - e.subject.x), dy: (e.y - e.subject.y) }))
                 })
             )
-            
+
         const handles = chartSelectorBox.append("g")
             .attr("class", "handles")
         handles.append("rect")
@@ -305,30 +308,45 @@ export const Canvas = (props: { plotId: string }) => {
         const _svg = d3.select(svgRef.current).select(`g.${props.plotId}`).select('g.plotBox')
         let plt: any;
 
-
-        switch (plot.type) {
-            case PlotType.SCATTER: {
-                const _plot = plot as ScatterPlot
-                plt = drawScatter(_svg, _plot, data, getAxis(_plot.xAxis) as LinearAxis, getAxis(_plot.yAxis) as LinearAxis, chart)
-                break;
-            }
-            case PlotType.LINE: {
-                const _plot = plot as LinePlot
-                plt = drawLine(_svg, _plot, data, getAxis(_plot.xAxis) as LinearAxis, getAxis(_plot.yAxis) as LinearAxis, chart)
-                break;
-            }
-            case PlotType.BAR:
-                const _plot = plot as BarPlot
-                plt = drawBar(_svg, _plot, data, getAxis(_plot.xAxis) as LinearAxis, getAxis(_plot.yAxis) as LinearAxis, chart)
-                break;
-            case PlotType.PIE: {
-                const _plot = plot as PiePlot
-                plt = drawPie(_svg, _plot, data, chart, getAxis(_plot.circularAxis) as CircularAxis)
-                break;
-            }
-            default:
-                break;
+        if (isScatter(plot)) {
+            plt = drawScatter(_svg, plot, data, getAxis(plot.xAxis) as LinearAxis, getAxis(plot.yAxis) as LinearAxis, chart)
         }
+        else if (isLine(plot)) {
+            plt = drawLine(_svg, plot, data, getAxis(plot.xAxis) as LinearAxis, getAxis(plot.yAxis) as LinearAxis, chart)
+        }
+        else if (isBar(plot)) {
+            plt = drawBar(_svg, plot, data, getAxis(plot.xAxis) as LinearAxis, getAxis(plot.yAxis) as LinearAxis, chart)
+        }
+        else if (isPie(plot)) {
+            plt = drawPie(_svg, plot, data, chart, getAxis(plot.circularAxis) as CircularAxis)
+        }
+        else if (isSpider(plot)) {
+            plt = drawSpider(_svg, plot, data, chart)
+        }
+
+        // switch (plot.type) {
+        //     case PlotType.SCATTER: {
+        //         const _plot = plot as ScatterPlot
+        //         plt = drawScatter(_svg, _plot, data, getAxis(_plot.xAxis) as LinearAxis, getAxis(_plot.yAxis) as LinearAxis, chart)
+        //         break;
+        //     }
+        //     case PlotType.LINE: {
+        //         const _plot = plot as LinePlot
+        //         plt = drawLine(_svg, _plot, data, getAxis(_plot.xAxis) as LinearAxis, getAxis(_plot.yAxis) as LinearAxis, chart)
+        //         break;
+        //     }
+        //     case PlotType.BAR:
+        //         const _plot = plot as BarPlot
+        //         plt = drawBar(_svg, _plot, data, getAxis(_plot.xAxis) as LinearAxis, getAxis(_plot.yAxis) as LinearAxis, chart)
+        //         break;
+        //     case PlotType.PIE: {
+        //         const _plot = plot as PiePlot
+        //         plt = drawPie(_svg, _plot, data, chart, getAxis(_plot.circularAxis) as CircularAxis)
+        //         break;
+        //     }
+        //     default:
+        //         break;
+        // }
 
         if (plt) {
             plt
@@ -425,7 +443,17 @@ ${plotCode}
 
     useEffect(() => {
         if (dataset) {
-            if (plots[0] && plots[0].type != PlotType.BAR) {
+            if (isScatter(plots[0])){
+                const continousProperties = dataset.props.filter(p => p.type === "continous")
+                dispatch(setAces([...aces.filter(ax => ax.type === AxisType.Linear).map(ax => ax as LinearAxis).map((ax, id) => {
+                    return {
+                        ...ax,
+                        key: continousProperties[id].key,
+                        scale: { ...ax.scale, props: {...ax.scale.props, domain: continousProperties[id].extent}}
+                    }
+                })]))
+            }
+            else if (plots[0] && plots[0].type != PlotType.BAR) {
                 if (aces.some(ax => ax.type === AxisType.Linear)) {
                     dispatch(setAces([...aces.filter(ax => ax.type === AxisType.Linear).map(ax => ax as LinearAxis).map((ax, id) => {
                         const key = dataset.props[id].key
@@ -509,6 +537,12 @@ ${plotCode}
 
                 {isPie(plots[0]) &&
                     <PiePlotPanel
+                        dataset={dataset}
+                        changePlotType={onPlotTypeChange}
+                    />}
+
+                {isSpider(plots[0]) &&
+                    <SpiderPlotPanel
                         dataset={dataset}
                         changePlotType={onPlotTypeChange}
                     />}

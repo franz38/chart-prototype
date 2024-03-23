@@ -13,12 +13,12 @@ export const SelectInput = <T,>(props: SelectInputProps<T>) => {
       <label
         className={`flex flex-row text-[13px] ${props.short ? "min-w-[94px]" : "min-w-[204px]"} h-[32px] border border-[#eee] `}
       >
-        <span className="flex justify-center items-center w-[30px] h-[30px]">
+        <span className="flex justify-center items-center w-[30px] h-[30px] shrink-0">
           {props.label}
         </span>
         <select
           disabled={props.readonly}
-          style={{ flexGrow: 1 }}
+          className="grow-1 w-full"
           value={props.value as string}
           onChange={(e) =>
             props.onChange(

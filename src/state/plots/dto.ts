@@ -1,3 +1,4 @@
+import { NumericScale } from "../aces/dto";
 import { PlotType } from "../dto";
 import { ISelectable } from "../dto";
 
@@ -78,30 +79,47 @@ export interface SpiderPlot extends ISelectable {
   name: string;
   label: string;
   type: PlotType;
-  aces: string[];
-  // plotProps: SpiderPlotProps;
+  aces: { [id: string]: NumericScale };
+  axisLenght: number;
+  innerLinesStyle: "straight" | "curve";
+  innerLines: number;
+  innerLinesColor: string;
+  innerLinesThickness: number;
+  innerLinesStrokeColor: string;
+  acesLinesColor: string;
+  acesLinesThickness: number;
+  areaStrokeColor: string;
+  areaColor: string;
+  axisLabelColor: string;
+  axisLabelSize: number;
+  axisLabelDistance: number;
+  colors: string[];
 }
 
 export type Plot = ScatterPlot | PiePlot | SpiderPlot | LinePlot | BarPlot;
 
 export const isScatter = (plot: Plot): plot is ScatterPlot => {
-  const plt = plot as ScatterPlot
+  const plt = plot as ScatterPlot;
   return !!plt.xAxis && !!plt.yAxis && !(plot as LinePlot).fill;
-}
+};
 
 export const isLine = (plot: Plot): plot is LinePlot => {
-  const plt = plot as LinePlot
+  const plt = plot as LinePlot;
   return !!plt.xAxis && !!plt.yAxis && !!plt.fill && !(plot as BarPlot).padding;
-}
+};
 
 export const isBar = (plot: Plot): plot is BarPlot => {
-  const plt = plot as BarPlot
+  const plt = plot as BarPlot;
   return !!plt.xAxis && !!plt.yAxis && !!plt.fill && !!plt.padding;
-}
+};
 
 export const isPie = (plot: Plot): plot is PiePlot => {
   return !!(plot as PiePlot).circularAxis;
-}
+};
+
+export const isSpider = (plot: Plot): plot is SpiderPlot => {
+  return !!(plot as SpiderPlot).aces;
+};
 
 export const newScatterPlot = (xAxis?: string, yAxis?: string): ScatterPlot => {
   return {
@@ -168,5 +186,41 @@ export const newPiePlot = (circularAxis?: string): PiePlot => {
     anglePadding: 5,
     startAngle: 0,
     endAngle: 360,
+  };
+};
+
+export const newSpiderPlot = (
+  aces?: {
+    key: string;
+    type: "discrete" | "continous";
+    extent: any[];
+  }[],
+): SpiderPlot => {
+  return {
+    name: "plott",
+    label: "Spider",
+    type: PlotType.SPIDER,
+    aces: (aces ?? []).reduce(
+      (acc, cur) => {
+        let range = (cur.extent[1] - cur.extent[0])
+        acc[cur.key] = { domain: [Math.max(cur.extent[0] - range*0.5,0), cur.extent[1]+range*0.1], range: [0, 200] };
+        return acc;
+      },
+      {} as { [id: string]: NumericScale },
+    ),
+    axisLenght: 200,
+    innerLinesStyle: "curve",
+    innerLines: 5,
+    innerLinesColor: "#00000010",
+    innerLinesStrokeColor: "#00000025",
+    areaStrokeColor: "#ff0000",
+    areaColor: "#ff000025",
+    acesLinesColor: "#00000025",
+    acesLinesThickness: 1,
+    innerLinesThickness: 1,
+    axisLabelColor: "#000000",
+    axisLabelSize: 10,
+    axisLabelDistance: 25,
+    colors: ["#f2cc8f", "#81b29a", "#3d405b", "#e07a5f", "#f4f1de"]
   };
 };

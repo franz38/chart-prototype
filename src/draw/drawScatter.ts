@@ -39,7 +39,7 @@ export const drawScatter = (
 
   let sizeScale: any = undefined;
   if (plot.size.key)
-    sizeScale = d3.scaleLinear(
+    sizeScale = d3.scaleSqrt(
       plot.size.domain as number[],
       plot.size.range as number[],
     );

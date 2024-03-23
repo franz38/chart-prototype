@@ -69,7 +69,7 @@ export const DynamicColor = (props: DynamicColorProps) => {
           {typeof props.value.domain[0] === "string" && (
             <div className="w-[204px] flex flex-col gap-y-1">
               {props.value.domain.map((el, id) => (
-                <div className="flex flex-row gap-1" key={el}>
+                <div className="flex flex-row w-full gap-1" key={el}>
                   <span
                     className="min-w-14 inline-block rounded-sm border border-[#eee] text-xs p-[2px] leading-[26px] h-[30px] truncate cursor-default"
                     title={el.toString()}
@@ -83,7 +83,7 @@ export const DynamicColor = (props: DynamicColorProps) => {
                       rangeCopy[id] = val;
                       props.onChange({ ...props.value, range: rangeCopy });
                     }}
-                    short
+                    size="short"
                   />
                 </div>
               ))}

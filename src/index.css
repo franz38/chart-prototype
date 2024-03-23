@@ -140,10 +140,6 @@ select{
 }
 
 
-.demo-box{
-  cursor: pointer;
-}
-
 .demo-box:hover > img {
   border-color: #398287;
 }
@@ -153,9 +149,4 @@ select{
   text-decoration: underline;
 }
 
-.demo-box img {
-  width: 100px;
-  height: auto;
-  border-radius: 12px;
-  border: 2px solid transparent;
-}
+

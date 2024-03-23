@@ -2,7 +2,12 @@ import { hsla, parseToRgba, rgba, toHex, toHsla } from "color2k";
 
 export const randomColor = (opacity: number = 1): string => {
   return toHex(
-    rgba(Math.random() * 255, Math.random() * 255, Math.random() * 255, opacity),
+    rgba(
+      Math.random() * 255,
+      Math.random() * 255,
+      Math.random() * 255,
+      opacity,
+    ),
   );
 };
 

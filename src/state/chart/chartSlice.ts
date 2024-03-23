@@ -18,6 +18,18 @@ const chartSlice = createSlice({
       state.rect.y = Math.max(action.payload.height/2 - state.rect.h/2, 0)
       state.hidden = false;
     },
+    setStyle: (state, action: PayloadAction<{name?: string, backgroundColor?: string, padding?: number[], W?: number, H?: number}>) => {
+      return { ...state,
+        name: action.payload.name || state.name,
+        backgroundColor: action.payload.backgroundColor || state.backgroundColor,
+        padding: action.payload.padding || state.padding,
+        rect: {
+          ...state.rect,
+          w: action.payload.W || state.rect.w,
+          h: action.payload.H || state.rect.h
+        }
+      }
+    },
     moveX: (state, action: PayloadAction<number>) => {
       state.rect = { ...state.rect, x: action.payload };
     },
@@ -86,6 +98,7 @@ export const {
   handle4,
   drag,
   show,
-  setFileName
+  setFileName,
+  setStyle
 } = chartSlice.actions;
 export default chartSlice.reducer;

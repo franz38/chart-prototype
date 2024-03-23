@@ -1,24 +1,27 @@
 import { Steps, Upload, UploadFile } from "antd";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { addPlot } from "../state/plots/plotsSlice";
+import { addPlot } from "../../state/plots/plotsSlice";
 import {
   newBarPlot,
   newLinePlot,
   newPiePlot,
   newScatterPlot,
-} from "../state/plots/dto";
-import { getRange, loadLocalDs, onFileUpload } from "../utils/data";
-import { Dataset, PlotType } from "../state/dto";
-import { newBottomAxis, newCircularAxis, newLeftAxis } from "../state/aces/dto";
-import { addAces, changeAxisKey } from "../state/aces/acesSlice";
+  newSpiderPlot,
+} from "../../state/plots/dto";
+import { getRange, loadLocalDs, onFileUpload } from "../../utils/data";
+import { Dataset, PlotType } from "../../state/dto";
+import { newBottomAxis, newCircularAxis, newLeftAxis } from "../../state/aces/dto";
+import { addAces, changeAxisKey } from "../../state/aces/acesSlice";
 import { UploadChangeParam } from "antd/es/upload";
 import { UploadIcon } from "lucide-react";
-import { setSelected } from "../state/selected/selectedSlice";
-import { resizeW, show } from "../state/chart/chartSlice";
+import { setSelected } from "../../state/selected/selectedSlice";
+import { resizeH, resizeW, setColor, setStyle, show } from "../../state/chart/chartSlice";
 import * as d3 from "d3";
-import { getComplementary, randomColor } from "../utils/colors";
-import { toggleMainPanel } from "../state/layout/layoutSlice";
+import { getComplementary, randomColor } from "../../utils/colors";
+import { toggleMainPanel } from "../../state/layout/layoutSlice";
+import { TemplateButton } from "./TemplateButton";
+import { transparentize } from "color2k";
 
 interface SetupModalProps {
   dataset: Dataset | undefined;
@@ -158,17 +161,70 @@ export const SetupModal = (props: SetupModalProps) => {
     if (ds) props.setDataset(ds);
   };
 
-  const setupScatter = async () => {
-    const ds = await loadLocalDs("./world_cups.csv");
-    const xAxis = newBottomAxis(
-      props.dataset ? props.dataset.props[0].key : "",
-    );
-    const yAxis = newLeftAxis(props.dataset ? props.dataset.props[1].key : "");
+  // const setupScatter = async () => {
+  //   const ds = await loadLocalDs("./life_expectancy.csv");
+  //   const xAxis = newBottomAxis(
+  //     props.dataset ? props.dataset.props[0].key : "",
+  //   );
+  //   const yAxis = newLeftAxis(props.dataset ? props.dataset.props[1].key : "");
+  //   const plot = newScatterPlot(xAxis.id, yAxis.id);
+  //   const domain = getRange(ds, ds.props[0].key) ?? ([] as any);
+  //   const range = (getRange(ds, ds.props[0].key) ?? []).map((_: any) =>
+  //     randomColor(),
+  //   );
+  //   if (range.length == 2) range[1] = getComplementary(range[0]);
+
+  //   dispatch(
+  //     addPlot({
+  //       ...plot,
+  //       color: {
+  //         ...plot.color,
+  //         key: ds.props[0].key,
+  //         domain: domain,
+  //         range: range,
+  //       },
+  //       size: {
+  //         ...plot.size,
+  //         key: ds.props[1].key,
+  //         domain: getRange(ds, ds.props[1].key) ?? ([] as any),
+  //         range: [2, 5],
+  //       } as any,
+  //     }),
+  //   );
+  //   dispatch(addAces([xAxis, yAxis]));
+  //   dispatch(
+  //     changeAxisKey({ axis: xAxis, dataset: props.dataset, newKey: xAxis.key }),
+  //   );
+  //   dispatch(
+  //     changeAxisKey({ axis: yAxis, dataset: props.dataset, newKey: yAxis.key }),
+  //   );
+  //   dispatch(setSelected({ type: "plot", key: plot.name }));
+
+  //   const _svg = d3.select("svg#svg");
+  //   if (_svg) {
+  //     const W = (_svg as any).node().getBoundingClientRect().width;
+  //     const H = (_svg as any).node().getBoundingClientRect().height;
+  //     dispatch(show({ width: W, height: H }));
+  //   } else {
+  //     dispatch(show({ width: 0, height: 0 }));
+  //   }
+
+  //   props.setDataset(ds);
+  //   dispatch(toggleMainPanel());
+  //   setStep(3);
+  // };
+
+  const setupScatterDemo2 = async () => {
+    const ds = await loadLocalDs("./life_expectancy.csv");
+    let xAxis = newBottomAxis(ds ? ds.props[3].key : "") ;
+    let yAxis = newLeftAxis(ds ? ds.props[2].key : "")
+
+    xAxis = {...xAxis, showGrid: true, style: { ...xAxis.style, tickColor: "#5555554c", lineVisible: false }}
+    yAxis = {...yAxis, showGrid: true, style: { ...yAxis.style, tickColor: "#5555554c", lineVisible: false }}
+
     const plot = newScatterPlot(xAxis.id, yAxis.id);
-    const domain = getRange(ds, ds.props[0].key) ?? ([] as any);
-    const range = (getRange(ds, ds.props[0].key) ?? []).map((_: any) =>
-      randomColor(),
-    );
+    const domain = getRange(ds, ds.props[4].key) ?? ([] as any);
+    const range = ["#1F77B4", "#FF7F0F", "#2AA02B", "#D62727", "#9367BD", "#8B554B"].map(c => transparentize(c, 0.5))
     if (range.length == 2) range[1] = getComplementary(range[0]);
 
     dispatch(
@@ -176,28 +232,35 @@ export const SetupModal = (props: SetupModalProps) => {
         ...plot,
         color: {
           ...plot.color,
-          key: ds.props[0].key,
+          key: ds.props[4].key,
           domain: domain,
           range: range,
         },
         size: {
           ...plot.size,
-          key: ds.props[1].key,
-          domain: getRange(ds, ds.props[1].key) ?? ([] as any),
-          range: [2, 5],
+          key: ds.props[3].key,
+          domain: getRange(ds, ds.props[3].key) ?? ([] as any),
+          range: [3, 25],
         } as any,
       }),
     );
     dispatch(addAces([xAxis, yAxis]));
     dispatch(
-      changeAxisKey({ axis: xAxis, dataset: props.dataset, newKey: xAxis.key }),
+      changeAxisKey({ axis: xAxis, dataset: ds, newKey: xAxis.key }),
     );
     dispatch(
-      changeAxisKey({ axis: yAxis, dataset: props.dataset, newKey: yAxis.key }),
+      changeAxisKey({ axis: yAxis, dataset: ds, newKey: yAxis.key }),
     );
     dispatch(setSelected({ type: "plot", key: plot.name }));
+    
+    dispatch(setStyle({
+      backgroundColor: "#FFFBF1",
+      W: 560,
+      H: 300
+    }))
 
     const _svg = d3.select("svg#svg");
+    
     if (_svg) {
       const W = (_svg as any).node().getBoundingClientRect().width;
       const H = (_svg as any).node().getBoundingClientRect().height;
@@ -219,14 +282,18 @@ export const SetupModal = (props: SetupModalProps) => {
   };
 
   const setupBar = async () => {
-    const ds = await loadLocalDs("./2023_movies.csv");
+    const ds = await loadLocalDs("./random_ds.csv");
 
-    const xAxis = newBottomAxis(ds ? ds.props[1].key : "");
-    const yAxis = newLeftAxis(ds ? ds.props[0].key : "");
+    let xAxis = newBottomAxis(ds ? ds.props[0].key : "");
+    let yAxis = newLeftAxis(ds ? ds.props[2].key : "");
+
+    xAxis = {...xAxis, style: { ...xAxis.style, tickColor: "#d7d7d7", lineColor: "#d7d7d7", fontColor: "#d7d7d7" }}
+    yAxis = {...yAxis, scale: {...yAxis.scale, props: {...yAxis.scale.props, domain: [0,70]} }, style: { ...yAxis.style, tickColor: "#d7d7d7", lineColor: "#d7d7d7", fontColor: "#d7d7d7" }}
+
     const plot = newBarPlot(xAxis.id, yAxis.id);
 
-    const domain = getRange(ds, ds.props[2].key) ?? [];
-    let range = (getRange(ds, ds.props[2].key) ?? []).map((_) => randomColor());
+    const domain = getRange(ds, ds.props[1].key) ?? [];
+    let range = ["#85669e", "#602425", "#f07586"];
     if (range.length == 2) range[1] = getComplementary(range[0]);
 
     dispatch(
@@ -234,12 +301,18 @@ export const SetupModal = (props: SetupModalProps) => {
         ...plot,
         fill: {
           ...plot.fill,
-          key: ds.props[2].key,
+          key: ds.props[1].key,
           domain: domain,
           range: range,
         } as any,
+        color: "#ffffff"
       }),
     );
+    dispatch(setStyle({
+      backgroundColor: "#2d3238",
+      W: 560,
+      H: 280
+    }))
     dispatch(addAces([xAxis, yAxis]));
     dispatch(changeAxisKey({ axis: xAxis, dataset: ds, newKey: xAxis.key }));
     dispatch(changeAxisKey({ axis: yAxis, dataset: ds, newKey: yAxis.key }));
@@ -251,13 +324,58 @@ export const SetupModal = (props: SetupModalProps) => {
     setStep(3);
   };
 
+  const setupDonutDemo = async () => {
+    const ds = await loadLocalDs("./user_acquisition.csv");
+
+    const circularAxis = newCircularAxis(ds ? ds.props[0].key : "");
+    const plot = newPiePlot(circularAxis.id);
+
+    const domain = getRange(ds, ds.props[1].key) ?? [];
+    let range = (getRange(ds, ds.props[1].key) ?? []).map((_) => randomColor());
+    if (range.length == 2) range[1] = getComplementary(range[0]);
+
+    dispatch(resizeW(plot.radius * 2));
+    dispatch(addAces([circularAxis]));
+    dispatch(
+      addPlot({
+        ...plot,
+        color: {
+          ...plot.color,
+          key: ds.props[1].key,
+          domain: domain,
+          range: ["#F4C6A9", "#EA5A55", "#7CD4BE", "#696471"],
+        } as any,
+        anglePadding: 0,
+        innerradius: 55,
+        borderColor: {fixedValue: "#00000000"},
+        startAngle: 70,
+        endAngle: 330
+      }),
+    );
+    dispatch(setSelected({ type: "plot", key: plot.name }));
+
+    const _svg = d3.select("svg#svg");
+    if (_svg) {
+      const W = (_svg as any).node().getBoundingClientRect().width;
+      const H = (_svg as any).node().getBoundingClientRect().height;
+      dispatch(show({ width: W, height: H }));
+    } else {
+      dispatch(show({ width: 0, height: 0 }));
+    }
+    dispatch(setColor("#F5F5F5"))
+    // dispatch(updatePlot())
+    props.setDataset(ds);
+    dispatch(toggleMainPanel());
+    setStep(3);
+  }
+
   const setupPie = async () => {
     const ds = await loadLocalDs("./2023_movies.csv");
 
     const circularAxis = newCircularAxis(ds ? ds.props[0].key : "");
     const plot = newPiePlot(circularAxis.id);
 
-    const domain = getRange(ds, ds.props[2].key) ?? [];
+    const domain = getRange(ds, ds.props[1].key) ?? [];
     let range = (getRange(ds, ds.props[2].key) ?? []).map((_) => randomColor());
     if (range.length == 2) range[1] = getComplementary(range[0]);
 
@@ -268,10 +386,12 @@ export const SetupModal = (props: SetupModalProps) => {
         ...plot,
         color: {
           ...plot.color,
-          key: ds.props[2].key,
+          key: ds.props[1].key,
           domain: domain,
-          range: range,
+          range: ["#9BD2DC", "#EDADB5", "#BFD582", "#BBAA95", "#E87E85"],
         } as any,
+        innerradius: 20,
+        anglePadding: 8
       }),
     );
     dispatch(setSelected({ type: "plot", key: plot.name }));
@@ -290,13 +410,39 @@ export const SetupModal = (props: SetupModalProps) => {
     setStep(3);
   };
 
+  const setupSpider = async () => { 
+    const ds = await loadLocalDs("./player_stats.csv");
+
+    const plot = newSpiderPlot(ds.props.filter(p => p.type === "continous").slice(0,7));
+
+    dispatch(resizeW(plot.axisLenght*(1 + plot.axisLabelDistance/100)*2));
+    dispatch(resizeH(plot.axisLenght*(1 + plot.axisLabelDistance/100)*2));
+    dispatch(setColor("#fcfcfc"))
+    dispatch(addPlot(plot));
+    dispatch(setSelected({ type: "plot", key: plot.name }));
+
+    const _svg = d3.select("svg#svg");
+    if (_svg) {
+      const W = (_svg as any).node().getBoundingClientRect().width;
+      const H = (_svg as any).node().getBoundingClientRect().height;
+      console.log(W,H)
+      dispatch(show({ width: W, height: H }));
+    } else {
+      dispatch(show({ width: 0, height: 0 }));
+    }
+
+    props.setDataset(ds);
+    dispatch(toggleMainPanel());
+    setStep(3);
+  };
+
   return (
     <>
       <div
-        className={`${step <= 1 ? "" : "hidden"} overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-full max-h-full flex bg-[#00000073]`}
+        className={`${step <= 1 ? "" : "hidden"} flex absolute top-0 right-0 left-0 justify-center min-h-full items-center container mx-auto bg-white`}
       >
-        <div className="relative p-4 w-full max-w-2xl max-h-full">
-          <div className="relative p-8 pt-16 bg-white rounded-md dark:bg-gray-700 flex flex-col items-center border border-[#d5d5d5]">
+        <div className="relative p-4 w-full bg-slate-100">
+          <div className="relative p-8 pt-16 rounded-md flex flex-col items-center ">
             {step < 0 && (
               <>
                 <div className="flex flex-col items-center">
@@ -307,31 +453,45 @@ export const SetupModal = (props: SetupModalProps) => {
                   <span className="mt-2">
                     Select one of the examples or start from scratch!
                   </span>
-                  <div className="flex flex-row items-center  mt-12 gap-5 text-sm">
-                    <div className="demo-box" onClick={() => setStep(step + 1)}>
-                      <img src="./plot_illustrations/empty.png"></img>
-                      <span>Empty canvas</span>
+                  <div className="flex flex-wrap w-full gap-5 justify-center items-center mt-12 text-sm ">
+
+                      <TemplateButton 
+                        onClick={() => setupScatterDemo2()}
+                        text="Scatter"
+                        img="./chart_demo/scatter.png"
+                      />
+                      <TemplateButton 
+                        onClick={() => setupLine()}
+                        text="Line"
+                        img="./chart_demo/line.png"
+                      />
+                      <TemplateButton 
+                        onClick={() => setupPie()}
+                        text="Pie"
+                        img="./chart_demo/pie.png"
+                      />
+                      <TemplateButton 
+                        onClick={() => setupDonutDemo()}
+                        text="Donut"
+                        img="./chart_demo/donut.png"
+                      />
+                      <TemplateButton 
+                        onClick={() => setupBar()}
+                        text="Bar"
+                        img="./chart_demo/bar.png"
+                      />
+                      <TemplateButton 
+                        onClick={() => setupSpider()}
+                        text="Spider"
+                        img="./chart_demo/spider.png"
+                      /> 
+                      <TemplateButton 
+                        onClick={() => setStep(step + 1)}
+                        text="Empty canvas"
+                        img="./plot_illustrations/empty.png"
+                      /> 
+                      
                     </div>
-                    <div className="h-20 mb-4 border-s border-[#d7d7d7]"></div>
-                    <div className="flex flex-wrap gap-5 justify-start w-[360px]">
-                      <div className="demo-box" onClick={() => setupScatter()}>
-                        <img src="./plot_illustrations/ScatterPlot.png"></img>
-                        <span>Scatter plot</span>
-                      </div>
-                      <div className="demo-box" onClick={() => setupLine()}>
-                        <img src="./plot_illustrations/LinePlot.png"></img>
-                        <span>Line plot</span>
-                      </div>
-                      <div className="demo-box" onClick={() => setupPie()}>
-                        <img src="./plot_illustrations/PiePlot.png"></img>
-                        <span>Pie plot</span>
-                      </div>
-                      <div className="demo-box" onClick={() => setupBar()}>
-                        <img src="./plot_illustrations/BarPlot.png"></img>
-                        <span>Bar plot</span>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </>
             )}
