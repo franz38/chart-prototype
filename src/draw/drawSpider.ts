@@ -11,7 +11,6 @@ export const drawSpider = (
   _data: Dataset,
   _chart: Chart,
 ) => {
-
   const padding = (1 + plot.axisLabelDistance / 100) * plot.axisLenght;
 
   const plt = d3ExistOrAppend(canvas.select(`g.${plot.name}`), () =>

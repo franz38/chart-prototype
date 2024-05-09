@@ -1,4 +1,3 @@
-import { Steps, Upload, UploadFile } from "antd";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { addPlot } from "../../state/plots/plotsSlice";
@@ -9,12 +8,10 @@ import {
   newScatterPlot,
   newSpiderPlot,
 } from "../../state/plots/dto";
-import { getRange, loadLocalDs, onFileUpload } from "../../utils/data";
+import { getRange, loadLocalDs } from "../../utils/data";
 import { Dataset, PlotType } from "../../state/dto";
 import { newBottomAxis, newCircularAxis, newLeftAxis } from "../../state/aces/dto";
 import { addAces, changeAxisKey } from "../../state/aces/acesSlice";
-import { UploadChangeParam } from "antd/es/upload";
-import { UploadIcon } from "lucide-react";
 import { setSelected } from "../../state/selected/selectedSlice";
 import { resizeH, resizeW, setColor, setStyle, show } from "../../state/chart/chartSlice";
 import * as d3 from "d3";
@@ -154,65 +151,6 @@ export const SetupModal = (props: SetupModalProps) => {
     }
   };
 
-  const onFileInputChange = async (
-    info: UploadChangeParam<UploadFile<any>>,
-  ) => {
-    const ds = await onFileUpload(info.file.originFileObj);
-    if (ds) props.setDataset(ds);
-  };
-
-  // const setupScatter = async () => {
-  //   const ds = await loadLocalDs("./life_expectancy.csv");
-  //   const xAxis = newBottomAxis(
-  //     props.dataset ? props.dataset.props[0].key : "",
-  //   );
-  //   const yAxis = newLeftAxis(props.dataset ? props.dataset.props[1].key : "");
-  //   const plot = newScatterPlot(xAxis.id, yAxis.id);
-  //   const domain = getRange(ds, ds.props[0].key) ?? ([] as any);
-  //   const range = (getRange(ds, ds.props[0].key) ?? []).map((_: any) =>
-  //     randomColor(),
-  //   );
-  //   if (range.length == 2) range[1] = getComplementary(range[0]);
-
-  //   dispatch(
-  //     addPlot({
-  //       ...plot,
-  //       color: {
-  //         ...plot.color,
-  //         key: ds.props[0].key,
-  //         domain: domain,
-  //         range: range,
-  //       },
-  //       size: {
-  //         ...plot.size,
-  //         key: ds.props[1].key,
-  //         domain: getRange(ds, ds.props[1].key) ?? ([] as any),
-  //         range: [2, 5],
-  //       } as any,
-  //     }),
-  //   );
-  //   dispatch(addAces([xAxis, yAxis]));
-  //   dispatch(
-  //     changeAxisKey({ axis: xAxis, dataset: props.dataset, newKey: xAxis.key }),
-  //   );
-  //   dispatch(
-  //     changeAxisKey({ axis: yAxis, dataset: props.dataset, newKey: yAxis.key }),
-  //   );
-  //   dispatch(setSelected({ type: "plot", key: plot.name }));
-
-  //   const _svg = d3.select("svg#svg");
-  //   if (_svg) {
-  //     const W = (_svg as any).node().getBoundingClientRect().width;
-  //     const H = (_svg as any).node().getBoundingClientRect().height;
-  //     dispatch(show({ width: W, height: H }));
-  //   } else {
-  //     dispatch(show({ width: 0, height: 0 }));
-  //   }
-
-  //   props.setDataset(ds);
-  //   dispatch(toggleMainPanel());
-  //   setStep(3);
-  // };
 
   const setupScatterDemo2 = async () => {
     const ds = await loadLocalDs("./life_expectancy.csv");
@@ -451,7 +389,7 @@ export const SetupModal = (props: SetupModalProps) => {
                     Welcome to QuickCharts
                   </span>
                   <span className="mt-2">
-                    Select one of the examples or start from scratch!
+                    Select one of the examples and customize it!
                   </span>
                   <div className="flex flex-wrap w-full gap-5 justify-center items-center mt-12 text-sm ">
 
@@ -485,140 +423,12 @@ export const SetupModal = (props: SetupModalProps) => {
                         text="Spider"
                         img="./chart_demo/spider.png"
                       /> 
-                      <TemplateButton 
-                        onClick={() => setStep(step + 1)}
-                        text="Empty canvas"
-                        img="./plot_illustrations/empty.png"
-                      /> 
                       
                     </div>
                 </div>
               </>
             )}
 
-            {step >= 0 && (
-              <>
-                <Steps
-                  size="small"
-                  current={step}
-                  items={[
-                    { title: "Select data" },
-                    { title: "Choose plot type" },
-                  ]}
-                  style={{
-                    width: "20rem",
-                    margin: "auto",
-                    padding: "0rem 0px 4rem 0px",
-                  }}
-                />
-                <div className="flex flex-col gap-2.5 w-[20rem] mx-auto">
-                  {step === 0 && (
-                    <>
-                      <div className="flex flex-col gap-2.5">
-                        <button
-                          className="text-sm rounded-md"
-                          onClick={async () => {
-                            props.setDataset(
-                              await loadLocalDs("./world_cups.csv"),
-                            );
-                            setStep(step + 1);
-                          }}
-                        >
-                          Random dataset
-                        </button>
-
-                        <button
-                          className="text-sm rounded-md"
-                          onClick={async () => {
-                            setStep(step + 1);
-                          }}
-                        >
-                          No dataset (you can add one later)
-                        </button>
-
-                        <Upload
-                          name="avatar"
-                          listType="picture-card"
-                          className="avatar-uploader"
-                          showUploadList={false}
-                          // beforeUpload={beforeUpload}
-                          onChange={(f) => {
-                            onFileInputChange(f);
-                            setStep(step + 1);
-                          }}
-                          style={{ width: "100%" }}
-                        >
-                          <div className="flex flex-col items-center">
-                            {/* {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton} */}
-                            <UploadIcon />
-                            <button
-                              style={{
-                                border: 0,
-                                background: "none",
-                                paddingTop: ".2rem",
-                              }}
-                              type="button"
-                            >
-                              {/* {loading ? <LoadingOutlined /> : <PlusOutlined />} */}
-                              {/* <PlusOutlined /> */}
-                              <div style={{ marginTop: 8 }}>Upload dataset</div>
-                            </button>
-                          </div>
-                        </Upload>
-                      </div>
-                    </>
-                  )}
-                  {step === 1 && (
-                    <div className="flex flex-wrap justify-center mt-2 gap-5 text-sm">
-                      <div
-                        className="demo-box"
-                        onClick={() => {
-                          dispatch(toggleMainPanel());
-                          generatePlot(PlotType.SCATTER);
-                          setStep(step + 1);
-                        }}
-                      >
-                        <img src="./plot_illustrations/ScatterPlot.png"></img>
-                        <span>Scatter plot</span>
-                      </div>
-                      <div
-                        className="demo-box"
-                        onClick={() => {
-                          dispatch(toggleMainPanel());
-                          generatePlot(PlotType.LINE);
-                          setStep(step + 1);
-                        }}
-                      >
-                        <img src="./plot_illustrations/LinePlot.png"></img>
-                        <span>Line plot</span>
-                      </div>
-                      <div
-                        className="demo-box"
-                        onClick={() => {
-                          dispatch(toggleMainPanel());
-                          generatePlot(PlotType.PIE);
-                          setStep(step + 1);
-                        }}
-                      >
-                        <img src="./plot_illustrations/PiePlot.png"></img>
-                        <span>Pie plot</span>
-                      </div>
-                      <div
-                        className="demo-box"
-                        onClick={() => {
-                          dispatch(toggleMainPanel());
-                          generatePlot(PlotType.BAR);
-                          setStep(step + 1);
-                        }}
-                      >
-                        <img src="./plot_illustrations/BarPlot.png"></img>
-                        <span>Bar plot</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
           </div>
         </div>
       </div>
